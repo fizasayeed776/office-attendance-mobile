@@ -13,9 +13,18 @@ export type Employee = {
   shift_name?: string;
 };
 
+export type AdminUser = {
+  pk: number;
+  username: string;
+  name: string;
+  staff_role: string;
+  staff_department: string;
+};
+
 type AuthContextValue = {
   loading: boolean;
   employee: Employee | null;
+  adminUser: AdminUser | null;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
 };
@@ -25,6 +34,7 @@ const AuthContext = createContext<AuthContextValue | undefined>(undefined);
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [loading, setLoading] = useState(true);
   const [employee, setEmployee] = useState<Employee | null>(null);
+  const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
 
   const restoreSession = useCallback(async () => {
     const token = await tokenStorage.get();
@@ -37,6 +47,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // stored token is stale/revoked, this fails and we fall back to login.
       const { data } = await api.get('/api/mobile/dashboard/');
       setEmployee(data.employee);
+      setAdminUser(null);
     } catch {
       await tokenStorage.clear();
     } finally {
@@ -55,7 +66,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       device_label: 'React Native app',
     });
     await tokenStorage.set(data.token);
-    setEmployee(data.employee);
+    if (data.role === 'admin') {
+      setAdminUser({
+        pk: data.pk,
+        username: data.username,
+        name: data.name,
+        staff_role: data.staff_role,
+        staff_department: data.staff_department,
+      });
+      setEmployee(null);
+    } else {
+      setEmployee(data.employee);
+      setAdminUser(null);
+    }
   }, []);
 
   const logout = useCallback(async () => {
@@ -66,6 +89,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     }
     await tokenStorage.clear();
     setEmployee(null);
+    setAdminUser(null);
   }, []);
 
   return (

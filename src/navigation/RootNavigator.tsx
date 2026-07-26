@@ -52,7 +52,7 @@ function MainTabs() {
 }
 
 export default function RootNavigator() {
-  const { loading, employee } = useAuth();
+  const { loading, employee, adminUser } = useAuth();
 
   if (loading) {
     return (
@@ -65,7 +65,7 @@ export default function RootNavigator() {
   return (
     <NavigationContainer>
       <Stack.Navigator screenOptions={{ headerShown: false }}>
-        {!employee ? (
+        {!employee && !adminUser ? (
           <Stack.Screen name="Login" component={LoginScreen} />
         ) : (
           <>
