@@ -1,4 +1,3 @@
-import React from 'react';
 import { ActivityIndicator, View, StyleSheet, Text } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -14,6 +13,7 @@ import AttendanceHistoryScreen from '../screens/AttendanceHistoryScreen';
 import LeavesScreen from '../screens/LeavesScreen';
 import CorrectionsScreen from '../screens/CorrectionsScreen';
 import ProfileScreen from '../screens/ProfileScreen';
+import AdminNavigator from './AdminNavigator';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
@@ -53,6 +53,7 @@ function MainTabs() {
 
 export default function RootNavigator() {
   const { loading, employee, adminUser } = useAuth();
+  console.log('RootNavigator render', { loading, hasEmployee: !!employee, hasAdmin: !!adminUser });
 
   if (loading) {
     return (
@@ -67,6 +68,8 @@ export default function RootNavigator() {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!employee && !adminUser ? (
           <Stack.Screen name="Login" component={LoginScreen} />
+        ) : adminUser ? (
+          <Stack.Screen name="Admin" component={AdminNavigator} />
         ) : (
           <>
             <Stack.Screen name="Main" component={MainTabs} />

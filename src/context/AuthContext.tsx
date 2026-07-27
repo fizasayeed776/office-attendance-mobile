@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useState, useCallback } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback } from 'react';
 import api, { tokenStorage } from '../api/client';
 
 export type Employee = {
@@ -37,19 +37,48 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [adminUser, setAdminUser] = useState<AdminUser | null>(null);
 
   const restoreSession = useCallback(async () => {
+    console.log('AuthContext.restoreSession start');
     const token = await tokenStorage.get();
     if (!token) {
+      console.log('AuthContext.restoreSession no token found');
       setLoading(false);
       return;
     }
     try {
-      // /api/mobile/dashboard/ doubles as a "who am I" check -- if the
-      // stored token is stale/revoked, this fails and we fall back to login.
-      const { data } = await api.get('/api/mobile/dashboard/');
-      setEmployee(data.employee);
-      setAdminUser(null);
-    } catch {
+      const { data } = await api.get('/api/session/');
+      console.log('AuthContext.restoreSession session response', data);
+      if (data.role === 'admin') {
+        setAdminUser({
+          pk: data.pk,
+          username: data.username,
+          name: data.name,
+          staff_role: data.staff_role,
+          staff_department: data.staff_department,
+        });
+        setEmployee(null);
+      } else if (data.role === 'employee' && data.employee_pk) {
+        setEmployee({
+          pk: data.employee_pk,
+          employee_id: data.employee_id,
+          name: data.name,
+          department: data.department,
+          designation: '',
+          email: '',
+          phone: '',
+          username: data.username,
+        });
+        setAdminUser(null);
+      } else {
+        console.log('AuthContext.restoreSession unauthenticated or unexpected session response', data);
+        await tokenStorage.clear();
+        setEmployee(null);
+        setAdminUser(null);
+      }
+    } catch (err) {
+      console.error('AuthContext.restoreSession failed', err);
       await tokenStorage.clear();
+      setEmployee(null);
+      setAdminUser(null);
     } finally {
       setLoading(false);
     }
@@ -60,24 +89,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [restoreSession]);
 
   const login = useCallback(async (username: string, password: string) => {
-    const { data } = await api.post('/api/mobile/login/', {
-      username,
-      password,
-      device_label: 'React Native app',
-    });
-    await tokenStorage.set(data.token);
-    if (data.role === 'admin') {
-      setAdminUser({
-        pk: data.pk,
-        username: data.username,
-        name: data.name,
-        staff_role: data.staff_role,
-        staff_department: data.staff_department,
+    console.log('AuthContext.login start', { username });
+    try {
+      const { data } = await api.post('/api/mobile/login/', {
+        username,
+        password,
+        device_label: 'React Native app',
       });
-      setEmployee(null);
-    } else {
-      setEmployee(data.employee);
-      setAdminUser(null);
+      console.log('AuthContext.login response', data);
+      await tokenStorage.set(data.token);
+      if (data.role === 'admin') {
+        if (!data.pk || !data.username) {
+          console.error('AuthContext.login admin response missing expected fields', data);
+          throw new Error('Unexpected admin login response from server.');
+        }
+        setAdminUser({
+          pk: data.pk,
+          username: data.username,
+          name: data.name,
+          staff_role: data.staff_role,
+          staff_department: data.staff_department,
+        });
+        setEmployee(null);
+      } else if (data.employee) {
+        setEmployee(data.employee);
+        setAdminUser(null);
+      } else {
+        console.error('AuthContext.login response missing employee/adminUser payload', data);
+        throw new Error('Unexpected login response from server.');
+      }
+    } catch (err: any) {
+      console.error('AuthContext.login failed', err);
+      throw err;
     }
   }, []);
 
@@ -93,7 +136,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ loading, employee, login, logout }}>
+    <AuthContext.Provider value={{ loading, employee, adminUser, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

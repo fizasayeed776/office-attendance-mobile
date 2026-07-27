@@ -20,9 +20,12 @@ export default function LoginScreen() {
       return;
     }
     setBusy(true);
+    console.log('LoginScreen.onSubmit start', { username: username.trim() });
     try {
       await login(username.trim(), password);
+      console.log('LoginScreen.onSubmit success');
     } catch (e: any) {
+      console.error('LoginScreen.onSubmit error', e);
       setError(e.message || 'Login failed.');
     } finally {
       setBusy(false);

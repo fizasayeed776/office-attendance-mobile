@@ -1,4 +1,4 @@
-import axios from 'axios';
+import axios, { type AxiosRequestHeaders } from 'axios';
 import * as SecureStore from 'expo-secure-store';
 import Constants from 'expo-constants';
 
@@ -32,8 +32,8 @@ export const api = axios.create({
 api.interceptors.request.use(async (config) => {
   const token = await tokenStorage.get();
   if (token) {
-    config.headers = config.headers ?? {};
-    (config.headers as Record<string, string>).Authorization = `Token ${token}`;
+    config.headers = (config.headers ?? {}) as AxiosRequestHeaders;
+    config.headers.Authorization = `Token ${token}`;
   }
   return config;
 });
