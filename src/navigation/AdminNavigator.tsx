@@ -9,15 +9,19 @@ import AddEmployeeScreen from '../screens/AddEmployeeScreen';
 import AdminAttendanceHubScreen from '../screens/AdminAttendanceHubScreen';
 import FaceAttendanceScreen from '../screens/FaceAttendanceScreen';
 import AttendanceListScreen from '../screens/AttendanceListScreen';
+import DepartmentsScreen from '../screens/DepartmentsScreen';
+import ShiftsScreen from '../screens/ShiftsScreen';
+import OrganizationHomeScreen from '../screens/OrganizationHomeScreen';
 import PlaceholderScreen from '../screens/PlaceholderScreen';
 
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 const EmployeesStack = createNativeStackNavigator();
 const AttendanceStack = createNativeStackNavigator();
+const OrganizationStack = createNativeStackNavigator();
 
 const TAB_ICONS: Record<string, string> = {
-  Dashboard: '🏠', Employees: '👥', Attendance: '🗓️', Reports: '📊', Settings: '⚙️',
+  Dashboard: '🏠', Employees: '👥', Attendance: '🗓️', Organization: '🏢', Reports: '📊', Settings: '⚙️',
 };
 
 function TabIcon({ route, focused }: { route: string; focused: boolean }) {
@@ -55,6 +59,21 @@ function AttendanceStackScreen() {
   );
 }
 
+function OrganizationStackScreen() {
+  return (
+    <OrganizationStack.Navigator
+      screenOptions={{
+        headerStyle: { backgroundColor: colors.card },
+        headerTitleStyle: { color: colors.ink, fontWeight: '700' },
+      }}
+    >
+      <OrganizationStack.Screen name="OrganizationHome" component={OrganizationHomeScreen} options={{ title: 'Organization' }} />
+      <OrganizationStack.Screen name="Departments" component={DepartmentsScreen} options={{ title: 'Departments' }} />
+      <OrganizationStack.Screen name="Shifts" component={ShiftsScreen} options={{ title: 'Shifts' }} />
+    </OrganizationStack.Navigator>
+  );
+}
+
 function AdminTabs() {
   return (
     <Tab.Navigator
@@ -68,6 +87,7 @@ function AdminTabs() {
       <Tab.Screen name="Dashboard" component={AdminDashboardScreen} options={{ title: 'Dashboard' }} />
       <Tab.Screen name="Employees" component={EmployeesStackScreen} options={{ title: 'Employees' }} />
       <Tab.Screen name="Attendance" component={AttendanceStackScreen} options={{ title: 'Attendance' }} />
+      <Tab.Screen name="Organization" component={OrganizationStackScreen} options={{ title: 'Organization' }} />
       <Tab.Screen name="Reports" component={PlaceholderScreen} options={{ title: 'Reports' }} />
       <Tab.Screen name="Settings" component={PlaceholderScreen} options={{ title: 'Settings' }} />
     </Tab.Navigator>
