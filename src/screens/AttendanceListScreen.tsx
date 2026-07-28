@@ -1,115 +1,239 @@
 import { useEffect, useState } from 'react';
-import { View, Text, FlatList, StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import {
+  View, Text, FlatList, StyleSheet, TextInput,
+  TouchableOpacity, ActivityIndicator,
+} from 'react-native';
 import apiClient from '../api/client';
-import { colors, spacing, radius } from '../theme/colors';
+import { colors, spacing, radius, shadows, typography } from '../theme/colors';
 
-function AttendanceItem({ item }: { item: any }) {
+function initials(name: string) {
+  return name.split(' ').filter(Boolean).slice(0, 2)
+    .map((w) => w[0]?.toUpperCase()).join('') || '?';
+}
+
+function StatusChip({ checkIn, isLate }: { checkIn: string | null; isLate?: boolean }) {
+  if (!checkIn) return (
+    <View style={[chipS.chip, { backgroundColor: colors.absentBg }]}>
+      <Text style={[chipS.text, { color: colors.absentFg }]}>Absent</Text>
+    </View>
+  );
+  if (isLate) return (
+    <View style={[chipS.chip, { backgroundColor: colors.lateBg }]}>
+      <Text style={[chipS.text, { color: colors.lateFg }]}>Late</Text>
+    </View>
+  );
   return (
-    <View style={styles.attendanceCard}>
-      <Text style={styles.employeeName}>{item.employee_name}</Text>
-      <Text style={styles.detail}>{item.employee_id} · {item.department || 'No department'}</Text>
-      <Text style={styles.detail}>Date: {item.date}</Text>
-      <Text style={styles.detail}>Check-in: {item.check_in || '–'}  Check-out: {item.check_out || '–'}</Text>
-      {item.check_in_lat && item.check_in_lng ? (
-        <Text style={styles.detail}>In geo: {item.check_in_lat.toFixed(4)}, {item.check_in_lng.toFixed(4)}</Text>
-      ) : null}
-      {item.check_out_lat && item.check_out_lng ? (
-        <Text style={styles.detail}>Out geo: {item.check_out_lat.toFixed(4)}, {item.check_out_lng.toFixed(4)}</Text>
-      ) : null}
+    <View style={[chipS.chip, { backgroundColor: colors.presentBg }]}>
+      <Text style={[chipS.text, { color: colors.presentFg }]}>Present</Text>
     </View>
   );
 }
+const chipS = StyleSheet.create({
+  chip: { paddingHorizontal: spacing.sm, paddingVertical: 3, borderRadius: radius.pill },
+  text: { fontSize: typography.xs, fontWeight: '700' },
+});
 
 export default function AttendanceListScreen({ route }: any) {
-  const initialQuery = route?.params?.q || '';
+  const initialQ = route?.params?.q || '';
   const [attendance, setAttendance] = useState<any[]>([]);
-  const [search, setSearch] = useState(initialQuery);
-  const [date, setDate] = useState('');
-  const [loading, setLoading] = useState(false);
+  const [search, setSearch]         = useState(initialQ);
+  const [date, setDate]             = useState('');
+  const [loading, setLoading]       = useState(false);
 
-  async function loadAttendance() {
+  async function load() {
     setLoading(true);
     try {
-      const params = { q: search.trim(), date: date.trim() };
-      const response = await apiClient.get('/api/attendance/', { params });
-      setAttendance(response.data.attendance || []);
-    } catch (error) {
-      console.warn('Failed to load attendance', error);
+      const res = await apiClient.get('/api/attendance/', {
+        params: { q: search.trim(), date: date.trim() },
+      });
+      setAttendance(res.data.attendance || []);
+    } catch {
+      setAttendance([]);
     } finally {
       setLoading(false);
     }
   }
 
-  useEffect(() => {
-    loadAttendance();
-  }, [search]);
+  useEffect(() => { load(); }, [search]);
 
   return (
     <View style={styles.screen}>
-      <Text style={styles.heading}>Attendance Records</Text>
-      <View style={styles.filterRow}>
-        <TextInput
-          style={styles.input}
-          placeholder="Search name or ID"
-          value={search}
-          onChangeText={setSearch}
-          onSubmitEditing={loadAttendance}
-          returnKeyType="search"
-        />
-        <TextInput
-          style={styles.input}
-          placeholder="YYYY-MM-DD"
-          value={date}
-          onChangeText={setDate}
-          onSubmitEditing={loadAttendance}
-          returnKeyType="search"
-        />
+      {/* ── Filter bar ── */}
+      <View style={styles.filterBar}>
+        <View style={styles.searchWrap}>
+          <Text style={styles.searchIcon}>🔍</Text>
+          <TextInput
+            style={styles.searchInput}
+            placeholder="Search by name or ID"
+            placeholderTextColor={colors.mutedLight}
+            value={search}
+            onChangeText={setSearch}
+            returnKeyType="search"
+            onSubmitEditing={load}
+          />
+        </View>
+        <View style={styles.dateWrap}>
+          <TextInput
+            style={styles.dateInput}
+            placeholder="YYYY-MM-DD"
+            placeholderTextColor={colors.mutedLight}
+            value={date}
+            onChangeText={setDate}
+            returnKeyType="search"
+            onSubmitEditing={load}
+          />
+        </View>
+        <TouchableOpacity style={styles.refreshBtn} onPress={load} disabled={loading}>
+          {loading
+            ? <ActivityIndicator size="small" color="#fff" />
+            : <Text style={styles.refreshBtnText}>↻</Text>}
+        </TouchableOpacity>
       </View>
-      <TouchableOpacity style={styles.loadButton} onPress={loadAttendance} disabled={loading}>
-        <Text style={styles.loadButtonText}>{loading ? 'Loading…' : 'Refresh'}</Text>
-      </TouchableOpacity>
+
+      {/* ── Table header ── */}
+      <View style={styles.tableHeader}>
+        <Text style={[styles.headerCell, { flex: 2 }]}>EMPLOYEE</Text>
+        <Text style={[styles.headerCell, { flex: 1.2 }]}>DATE</Text>
+        <Text style={[styles.headerCell, { flex: 1 }]}>IN</Text>
+        <Text style={[styles.headerCell, { flex: 1 }]}>OUT</Text>
+        <Text style={[styles.headerCell, { flex: 1, textAlign: 'right' }]}>STATUS</Text>
+      </View>
+
       <FlatList
         data={attendance}
-        keyExtractor={(item) => `${item.employee_id}-${item.date}-${item.check_in}-${item.check_out}`}
-        renderItem={({ item }) => <AttendanceItem item={item} />}
-        contentContainerStyle={attendance.length === 0 ? styles.emptyState : undefined}
-        ListEmptyComponent={<Text style={styles.emptyText}>{loading ? 'Loading attendance...' : 'No attendance records found.'}</Text>}
+        keyExtractor={(item, i) => `${item.employee_id}-${item.date}-${i}`}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={attendance.length === 0 ? styles.emptyWrap : styles.list}
+        ListEmptyComponent={
+          <View style={styles.emptyCenter}>
+            <Text style={styles.emptyIcon}>🗓️</Text>
+            <Text style={styles.emptyTitle}>
+              {loading ? 'Loading attendance…' : 'No records found'}
+            </Text>
+            <Text style={styles.emptyBody}>
+              {!loading && 'Try a different search term or date filter.'}
+            </Text>
+          </View>
+        }
+        renderItem={({ item, index }) => (
+          <View style={[styles.row, index % 2 === 1 && styles.rowAlt]}>
+            {/* Avatar + name */}
+            <View style={[styles.cell, { flex: 2 }]}>
+              <View style={styles.miniAvatar}>
+                <Text style={styles.miniAvatarText}>{initials(item.employee_name || '')}</Text>
+              </View>
+              <View style={{ flex: 1, marginLeft: spacing.sm }}>
+                <Text style={styles.cellPrimary} numberOfLines={1}>{item.employee_name}</Text>
+                <Text style={styles.cellSecondary} numberOfLines={1}>{item.employee_id}</Text>
+              </View>
+            </View>
+            <Text style={[styles.cellText, { flex: 1.2 }]}>{item.date}</Text>
+            <Text style={[styles.cellText, { flex: 1 }]}>{item.check_in || '—'}</Text>
+            <Text style={[styles.cellText, { flex: 1 }]}>{item.check_out || '—'}</Text>
+            <View style={{ flex: 1, alignItems: 'flex-end' }}>
+              <StatusChip checkIn={item.check_in} isLate={item.is_late} />
+            </View>
+          </View>
+        )}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg, padding: spacing.lg },
-  heading: { fontSize: 24, fontWeight: '700', color: colors.ink, marginBottom: spacing.sm },
-  filterRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.sm },
-  input: {
-    flex: 1,
+  screen: { flex: 1, backgroundColor: colors.bg },
+
+  // ── Filter bar
+  filterBar: {
+    flexDirection: 'row',
+    gap: spacing.sm,
+    padding: spacing.lg,
+    paddingBottom: spacing.md,
     backgroundColor: colors.card,
-    borderColor: colors.border,
-    borderWidth: 1,
-    borderRadius: radius.md,
-    padding: spacing.md,
-    color: colors.ink,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
-  loadButton: {
+  searchWrap: {
+    flex: 2,
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.bg,
+    borderRadius: radius.md,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    paddingHorizontal: spacing.sm,
+    gap: spacing.xs,
+  },
+  searchIcon: { fontSize: 13 },
+  searchInput: {
+    flex: 1, paddingVertical: 10,
+    fontSize: typography.sm, color: colors.ink,
+  },
+  dateWrap: {
+    flex: 1.4,
+    backgroundColor: colors.bg,
+    borderRadius: radius.md,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    justifyContent: 'center',
+    paddingHorizontal: spacing.sm,
+  },
+  dateInput: {
+    paddingVertical: 10,
+    fontSize: typography.sm, color: colors.ink,
+  },
+  refreshBtn: {
+    width: 44,
     backgroundColor: colors.brand,
     borderRadius: radius.md,
-    padding: spacing.md,
     alignItems: 'center',
-    marginBottom: spacing.md,
+    justifyContent: 'center',
   },
-  loadButtonText: { color: '#FFFFFF', fontWeight: '700' },
-  attendanceCard: {
-    backgroundColor: colors.card,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.lg,
-    marginBottom: spacing.md,
+  refreshBtnText: { fontSize: 18, color: '#fff', fontWeight: '700' },
+
+  // ── Table
+  tableHeader: {
+    flexDirection: 'row',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.bgDeep,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
   },
-  employeeName: { fontSize: 16, fontWeight: '700', color: colors.ink, marginBottom: spacing.xs },
-  detail: { color: colors.muted, fontSize: 13.5, lineHeight: 20 },
-  emptyState: { flexGrow: 1, justifyContent: 'center', alignItems: 'center' },
-  emptyText: { color: colors.muted, textAlign: 'center' },
+  headerCell: {
+    fontSize: typography.xs, fontWeight: '700',
+    color: colors.muted, letterSpacing: 0.5,
+  },
+
+  list: { paddingBottom: spacing.xxxl },
+  emptyWrap: { flex: 1 },
+  emptyCenter: {
+    flex: 1, alignItems: 'center', justifyContent: 'center',
+    paddingTop: 80, gap: spacing.sm,
+  },
+  emptyIcon: { fontSize: 40 },
+  emptyTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink },
+  emptyBody: { fontSize: typography.base, color: colors.muted, textAlign: 'center', paddingHorizontal: spacing.xl },
+
+  row: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.divider,
+  },
+  rowAlt: { backgroundColor: colors.bgDeep },
+
+  cell: { flexDirection: 'row', alignItems: 'center' },
+  cellPrimary: { fontSize: typography.sm, fontWeight: '600', color: colors.ink },
+  cellSecondary: { fontSize: typography.xs, color: colors.muted },
+  cellText: { fontSize: typography.sm, color: colors.ink2 },
+
+  miniAvatar: {
+    width: 30, height: 30, borderRadius: 15,
+    backgroundColor: colors.brandSoft,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  miniAvatarText: { fontSize: 10, fontWeight: '700', color: colors.brand },
 });

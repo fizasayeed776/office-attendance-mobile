@@ -1,77 +1,82 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import api from '../api/client';
-import { colors, spacing, radius } from '../theme/colors';
+import { colors, spacing, radius, shadows, typography } from '../theme/colors';
 
 export default function OrganizationHomeScreen({ navigation }: any) {
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState('');
-  const [departmentCount, setDepartmentCount] = useState(0);
+  const [error, setError]     = useState('');
+  const [deptCount, setDeptCount] = useState(0);
   const [shiftCount, setShiftCount] = useState(0);
 
   useEffect(() => {
-    async function loadCounts() {
-      setError('');
-      setLoading(true);
+    (async () => {
+      setError(''); setLoading(true);
       try {
-        const [deptRes, shiftRes] = await Promise.all([api.get('/api/departments/'), api.get('/api/shifts/')]);
-        setDepartmentCount((deptRes.data.departments || []).length);
-        setShiftCount((shiftRes.data.shifts || []).length);
+        const [dR, sR] = await Promise.all([api.get('/api/departments/'), api.get('/api/shifts/')]);
+        setDeptCount((dR.data.departments || []).length);
+        setShiftCount((sR.data.shifts || []).length);
       } catch (err: any) {
-        console.error('OrganizationHomeScreen loadCounts failed', err);
-        setError(err.message || 'Unable to load organization data.');
+        setError(err.message || 'Unable to load.');
       } finally {
         setLoading(false);
       }
-    }
-    loadCounts();
+    })();
   }, []);
 
+  const CARDS = [
+    { title: 'Departments', count: deptCount, noun: 'department', icon: '🏢', hint: 'Create, edit, and delete department records that employees can be assigned to.', screen: 'Departments' },
+    { title: 'Shifts',      count: shiftCount, noun: 'shift',      icon: '🕐', hint: 'Create and manage employee shifts with start/end times and grace periods.', screen: 'Shifts' },
+  ];
+
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.heading}>Organization</Text>
-      <Text style={styles.description}>Manage departments and shifts for your employees from a central admin console.</Text>
-      {!!error && <Text style={styles.error}>{error}</Text>}
+    <ScrollView style={s.screen} contentContainerStyle={s.content} showsVerticalScrollIndicator={false}>
+      <Text style={s.heading}>Organization</Text>
+      <Text style={s.sub}>Manage departments and shifts for your employees.</Text>
+
+      {!!error && <View style={s.errorBanner}><Text style={s.errorText}>{error}</Text></View>}
 
       {loading ? (
-        <View style={styles.loadingContainer}>
-          <ActivityIndicator size="large" color={colors.brand} />
-        </View>
+        <View style={s.loadingWrap}><ActivityIndicator size="large" color={colors.brand} /></View>
       ) : (
-        <>
-          <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Departments')}>
-            <Text style={styles.cardTitle}>Departments</Text>
-            <Text style={styles.cardMeta}>{departmentCount} {departmentCount === 1 ? 'department' : 'departments'}</Text>
-            <Text style={styles.cardHint}>Create, edit, and delete department records that employees can be assigned to.</Text>
+        CARDS.map((card) => (
+          <TouchableOpacity key={card.screen} style={s.card} onPress={() => navigation.navigate(card.screen)} activeOpacity={0.75}>
+            <View style={s.cardLeft}>
+              <View style={s.iconWrap}><Text style={s.icon}>{card.icon}</Text></View>
+              <View style={s.cardText}>
+                <Text style={s.cardTitle}>{card.title}</Text>
+                <Text style={s.cardHint}>{card.hint}</Text>
+              </View>
+            </View>
+            <View style={s.cardRight}>
+              <Text style={s.cardCount}>{card.count}</Text>
+              <Text style={s.cardCountLabel}>{card.count === 1 ? card.noun : card.noun + 's'}</Text>
+              <Text style={s.chevron}>›</Text>
+            </View>
           </TouchableOpacity>
-
-          <TouchableOpacity style={styles.card} onPress={() => navigation.navigate('Shifts')}>
-            <Text style={styles.cardTitle}>Shifts</Text>
-            <Text style={styles.cardMeta}>{shiftCount} {shiftCount === 1 ? 'shift' : 'shifts'}</Text>
-            <Text style={styles.cardHint}>Create and manage employee shifts with start/end times and grace periods.</Text>
-          </TouchableOpacity>
-        </>
+        ))
       )}
     </ScrollView>
   );
 }
 
-const styles = StyleSheet.create({
+const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  content: { padding: spacing.lg, paddingBottom: spacing.xxl },
-  heading: { fontSize: 24, fontWeight: '700', color: colors.ink, marginBottom: spacing.sm },
-  description: { color: colors.muted, lineHeight: 20, marginBottom: spacing.lg },
-  error: { color: colors.danger, marginBottom: spacing.md },
-  loadingContainer: { flex: 1, minHeight: 240, justifyContent: 'center', alignItems: 'center' },
-  card: {
-    backgroundColor: colors.card,
-    borderRadius: radius.lg,
-    borderWidth: 1,
-    borderColor: colors.border,
-    padding: spacing.lg,
-    marginBottom: spacing.md,
-  },
-  cardTitle: { fontSize: 18, fontWeight: '700', color: colors.ink, marginBottom: spacing.xs },
-  cardMeta: { color: colors.brand, fontSize: 15, fontWeight: '700', marginBottom: spacing.xs },
-  cardHint: { color: colors.muted, fontSize: 14, lineHeight: 20 },
+  content: { padding: spacing.lg, paddingBottom: spacing.xxxl },
+  heading: { fontSize: typography.xxl, fontWeight: '800', color: colors.ink, marginBottom: spacing.xs },
+  sub: { color: colors.muted, fontSize: typography.base, lineHeight: 20, marginBottom: spacing.xl },
+  errorBanner: { backgroundColor: colors.dangerSoft, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.md, borderLeftWidth: 3, borderLeftColor: colors.danger },
+  errorText: { color: colors.danger, fontSize: typography.sm },
+  loadingWrap: { paddingTop: 60, alignItems: 'center' },
+  card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border, flexDirection: 'row', alignItems: 'center', ...shadows.sm },
+  cardLeft: { flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
+  iconWrap: { width: 44, height: 44, borderRadius: radius.lg, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
+  icon: { fontSize: 22 },
+  cardText: { flex: 1 },
+  cardTitle: { fontSize: typography.lg, fontWeight: '700', color: colors.ink, marginBottom: spacing.xs },
+  cardHint: { fontSize: typography.sm, color: colors.muted, lineHeight: 19 },
+  cardRight: { alignItems: 'flex-end', gap: 2, marginLeft: spacing.md },
+  cardCount: { fontSize: typography.xxl, fontWeight: '800', color: colors.brand },
+  cardCountLabel: { fontSize: typography.xs, color: colors.muted, fontWeight: '600' },
+  chevron: { fontSize: 22, color: colors.muted, marginTop: 2 },
 });

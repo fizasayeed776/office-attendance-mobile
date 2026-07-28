@@ -1,17 +1,31 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
-  View, Text, TextInput, TouchableOpacity, StyleSheet, ActivityIndicator,
-  KeyboardAvoidingView, Platform, Image,
+  View, Text, TextInput, TouchableOpacity, StyleSheet,
+  ActivityIndicator, KeyboardAvoidingView, Platform, ScrollView,
+  StatusBar,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
-import { colors, spacing, radius } from '../theme/colors';
+import { API_BASE_URL } from '../api/client';
+import { colors, spacing, radius, shadows, typography } from '../theme/colors';
 
-export default function LoginScreen() {
+const SHOW_SERVER_FOOTER =
+  __DEV__ || API_BASE_URL.includes('localhost') || API_BASE_URL.includes('127.0.0.1');
+
+export default function LoginScreen({ navigation }: any) {
   const { login } = useAuth();
+  const insets = useSafeAreaInsets();
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const [busy, setBusy] = useState(false);
+  const [passwordVisible, setPasswordVisible] = useState(false);
+  const passwordRef = useRef<TextInput>(null);
+  const loginTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  useEffect(() => {
+    return () => { if (loginTimeoutRef.current) clearTimeout(loginTimeoutRef.current); };
+  }, []);
 
   const onSubmit = async () => {
     setError('');
@@ -19,14 +33,21 @@ export default function LoginScreen() {
       setError('Please enter your username and password.');
       return;
     }
+    if (API_BASE_URL.includes('localhost') || API_BASE_URL.includes('127.0.0.1')) {
+      setError('Server is set to localhost — this build cannot reach the backend. Contact your administrator.');
+      return;
+    }
     setBusy(true);
-    console.log('LoginScreen.onSubmit start', { username: username.trim() });
+    loginTimeoutRef.current = setTimeout(() => {
+      setBusy(false);
+      setError('Login timed out. Check your internet connection and try again.');
+    }, 30000);
     try {
       await login(username.trim(), password);
-      console.log('LoginScreen.onSubmit success');
+      if (loginTimeoutRef.current) clearTimeout(loginTimeoutRef.current);
     } catch (e: any) {
-      console.error('LoginScreen.onSubmit error', e);
-      setError(e.message || 'Login failed.');
+      if (loginTimeoutRef.current) clearTimeout(loginTimeoutRef.current);
+      setError(e?.message || 'Login failed. Please try again.');
     } finally {
       setBusy(false);
     }
@@ -34,81 +55,268 @@ export default function LoginScreen() {
 
   return (
     <KeyboardAvoidingView
-      style={styles.screen}
-      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+      style={styles.root}
+      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
     >
-      <View style={styles.brandBlock}>
-        <View style={styles.logoCircle}>
-          <Text style={styles.logoText}>A</Text>
+      <StatusBar barStyle="light-content" backgroundColor={colors.sidebar} />
+      <ScrollView
+        contentContainerStyle={[styles.scroll, { paddingTop: insets.top + spacing.xxl }]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        {/* ── Brand block ── */}
+        <View style={styles.brandBlock}>
+          <View style={styles.logoWrap}>
+            <Text style={styles.logoLetter}>A</Text>
+          </View>
+          <Text style={styles.appName}>Verity</Text>
+          <Text style={styles.tagline}>Office Attendance Management</Text>
         </View>
-        <Text style={styles.title}>Office Attendance</Text>
-        <Text style={styles.subtitle}>Sign in with the account your admin set up for you</Text>
-      </View>
 
-      <View style={styles.card}>
-        {!!error && <Text style={styles.error}>{error}</Text>}
+        {/* ── Form card ── */}
+        <View style={styles.card}>
+          <Text style={styles.cardHeading}>Sign in to your account</Text>
 
-        <Text style={styles.label}>Username</Text>
-        <TextInput
-          style={styles.input}
-          value={username}
-          onChangeText={setUsername}
-          autoCapitalize="none"
-          autoCorrect={false}
-          placeholder="e.g. john.doe"
-          placeholderTextColor={colors.muted}
-        />
+          {!!error && (
+            <View style={styles.errorBanner}>
+              <Text style={styles.errorIcon}>⚠</Text>
+              <Text style={styles.errorText}>{error}</Text>
+            </View>
+          )}
 
-        <Text style={styles.label}>Password</Text>
-        <TextInput
-          style={styles.input}
-          value={password}
-          onChangeText={setPassword}
-          secureTextEntry
-          placeholder="••••••••"
-          placeholderTextColor={colors.muted}
-        />
+          {/* Username */}
+          <View style={styles.fieldGroup}>
+            <Text style={styles.fieldLabel}>Username</Text>
+            <View style={styles.inputWrap}>
+              <TextInput
+                style={styles.input}
+                value={username}
+                onChangeText={setUsername}
+                autoCapitalize="none"
+                autoCorrect={false}
+                placeholder="e.g. john.doe"
+                placeholderTextColor={colors.mutedLight}
+                editable={!busy}
+                returnKeyType="next"
+                onSubmitEditing={() => passwordRef.current?.focus()}
+              />
+            </View>
+          </View>
 
-        <TouchableOpacity style={styles.button} onPress={onSubmit} disabled={busy}>
-          {busy ? <ActivityIndicator color="#fff" /> : <Text style={styles.buttonText}>Sign In</Text>}
-        </TouchableOpacity>
+          {/* Password */}
+          <View style={styles.fieldGroup}>
+            <Text style={styles.fieldLabel}>Password</Text>
+            <View style={styles.inputWrap}>
+              <TextInput
+                ref={passwordRef}
+                style={[styles.input, styles.inputWithAction]}
+                value={password}
+                onChangeText={setPassword}
+                secureTextEntry={!passwordVisible}
+                placeholder="••••••••"
+                placeholderTextColor={colors.mutedLight}
+                editable={!busy}
+                returnKeyType="go"
+                onSubmitEditing={onSubmit}
+              />
+              <TouchableOpacity
+                style={styles.inputAction}
+                onPress={() => setPasswordVisible((v) => !v)}
+              >
+                <Text style={styles.inputActionText}>{passwordVisible ? '🙈' : '👁'}</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
 
-        <Text style={styles.hint}>
-          Don't have a login yet? Ask your administrator or HR to add you as an employee, then
-          use the "Set up your login" link on the office kiosk to create your username and password.
-        </Text>
-      </View>
+          {/* Submit */}
+          <TouchableOpacity
+            style={[styles.btn, busy && styles.btnDisabled]}
+            onPress={onSubmit}
+            disabled={busy}
+            activeOpacity={0.85}
+          >
+            {busy ? (
+              <View style={styles.btnInner}>
+                <ActivityIndicator color="#fff" size="small" />
+                <Text style={styles.btnText}>Signing in…</Text>
+              </View>
+            ) : (
+              <Text style={styles.btnText}>Sign In</Text>
+            )}
+          </TouchableOpacity>
+
+          {/* Divider */}
+          <View style={styles.divider}>
+            <View style={styles.dividerLine} />
+            <Text style={styles.dividerText}>or</Text>
+            <View style={styles.dividerLine} />
+          </View>
+
+          {/* Setup link */}
+          <TouchableOpacity
+            style={styles.setupBtn}
+            onPress={() => navigation.navigate('SetupAccount')}
+            disabled={busy}
+          >
+            <Text style={styles.setupBtnText}>Set up your login</Text>
+          </TouchableOpacity>
+
+          <Text style={styles.hint}>
+            Don't have a login yet? Ask your admin to add you as an employee, then use "Set up your login" above.
+          </Text>
+        </View>
+
+        {/* ── Server footer (dev / localhost builds only) ── */}
+        {SHOW_SERVER_FOOTER && (
+          <View style={styles.serverFooter}>
+            <Text style={styles.serverLabel}>Server</Text>
+            <Text
+              style={[
+                styles.serverUrl,
+                (API_BASE_URL.includes('localhost') || API_BASE_URL.includes('127.0.0.1'))
+                  && styles.serverUrlBad,
+              ]}
+              numberOfLines={1}
+            >
+              {API_BASE_URL}
+            </Text>
+          </View>
+        )}
+      </ScrollView>
     </KeyboardAvoidingView>
   );
 }
 
 const styles = StyleSheet.create({
-  screen: { flex: 1, backgroundColor: colors.bg, justifyContent: 'center', padding: spacing.xl },
+  root: { flex: 1, backgroundColor: colors.sidebar },
+
+  scroll: {
+    flexGrow: 1,
+    paddingHorizontal: spacing.xl,
+    paddingBottom: spacing.xxxl,
+  },
+
+  // ── Brand
   brandBlock: { alignItems: 'center', marginBottom: spacing.xxl },
-  logoCircle: {
-    width: 64, height: 64, borderRadius: 32, backgroundColor: colors.brand,
-    alignItems: 'center', justifyContent: 'center', marginBottom: spacing.md,
+  logoWrap: {
+    width: 72, height: 72, borderRadius: radius.xl,
+    backgroundColor: colors.brand,
+    alignItems: 'center', justifyContent: 'center',
+    marginBottom: spacing.lg,
+    ...shadows.lg,
   },
-  logoText: { color: '#fff', fontSize: 28, fontWeight: '700' },
-  title: { fontSize: 22, fontWeight: '700', color: colors.ink },
-  subtitle: { fontSize: 13.5, color: colors.muted, marginTop: spacing.xs, textAlign: 'center' },
+  logoLetter: { color: '#fff', fontSize: typography.display, fontWeight: '800' },
+  appName: { color: '#fff', fontSize: typography.xxxl, fontWeight: '800', letterSpacing: -0.5 },
+  tagline: { color: colors.tabBarInactive, fontSize: typography.sm, marginTop: spacing.xs, letterSpacing: 0.3 },
+
+  // ── Card
   card: {
-    backgroundColor: colors.card, borderRadius: radius.lg, padding: spacing.lg,
-    borderWidth: 1, borderColor: colors.border,
+    backgroundColor: colors.card,
+    borderRadius: radius.xxl,
+    padding: spacing.xl,
+    ...shadows.lg,
   },
-  label: { fontSize: 12.5, fontWeight: '600', color: colors.ink2, marginBottom: spacing.xs, marginTop: spacing.md },
+  cardHeading: {
+    fontSize: typography.xl,
+    fontWeight: '700',
+    color: colors.ink,
+    marginBottom: spacing.lg,
+    textAlign: 'center',
+  },
+
+  // ── Error banner
+  errorBanner: {
+    flexDirection: 'row',
+    alignItems: 'flex-start',
+    backgroundColor: colors.dangerSoft,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.danger,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginBottom: spacing.lg,
+    gap: spacing.sm,
+  },
+  errorIcon: { fontSize: 14, color: colors.danger, marginTop: 1 },
+  errorText: { flex: 1, color: colors.danger, fontSize: typography.base, lineHeight: 20 },
+
+  // ── Fields
+  fieldGroup: { marginBottom: spacing.md },
+  fieldLabel: {
+    fontSize: typography.sm,
+    fontWeight: '600',
+    color: colors.ink2,
+    marginBottom: spacing.xs,
+    letterSpacing: 0.2,
+  },
+  inputWrap: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: colors.bg,
+    borderWidth: 1.5,
+    borderColor: colors.border,
+    borderRadius: radius.md,
+  },
   input: {
-    borderWidth: 1.5, borderColor: colors.border, borderRadius: radius.sm,
-    paddingHorizontal: spacing.md, paddingVertical: 10, fontSize: 15, color: colors.ink,
+    flex: 1,
+    paddingHorizontal: spacing.md,
+    paddingVertical: 13,
+    fontSize: typography.md,
+    color: colors.ink,
   },
-  button: {
-    backgroundColor: colors.brand, borderRadius: radius.sm, paddingVertical: 13,
-    alignItems: 'center', marginTop: spacing.lg,
+  inputWithAction: { paddingRight: 0 },
+  inputAction: { paddingHorizontal: spacing.md, paddingVertical: 13 },
+  inputActionText: { fontSize: 16 },
+
+  // ── Button
+  btn: {
+    backgroundColor: colors.brand,
+    borderRadius: radius.md,
+    paddingVertical: 15,
+    alignItems: 'center',
+    marginTop: spacing.sm,
+    ...shadows.md,
   },
-  buttonText: { color: '#fff', fontWeight: '700', fontSize: 15 },
-  error: {
-    backgroundColor: colors.dangerSoft, color: colors.danger, padding: spacing.sm,
-    borderRadius: radius.sm, marginBottom: spacing.sm, fontSize: 13,
+  btnDisabled: { opacity: 0.7 },
+  btnInner: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
+  btnText: { color: '#fff', fontWeight: '700', fontSize: typography.md, letterSpacing: 0.3 },
+
+  // ── Divider
+  divider: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginVertical: spacing.lg,
+    gap: spacing.sm,
   },
-  hint: { fontSize: 11.5, color: colors.muted, marginTop: spacing.lg, lineHeight: 16 },
+  dividerLine: { flex: 1, height: 1, backgroundColor: colors.border },
+  dividerText: { color: colors.muted, fontSize: typography.sm },
+
+  // ── Setup link
+  setupBtn: {
+    borderWidth: 1.5,
+    borderColor: colors.brand,
+    borderRadius: radius.md,
+    paddingVertical: 13,
+    alignItems: 'center',
+    marginBottom: spacing.md,
+  },
+  setupBtnText: { color: colors.brand, fontWeight: '700', fontSize: typography.md },
+
+  hint: {
+    color: colors.muted,
+    fontSize: typography.xs,
+    lineHeight: 17,
+    textAlign: 'center',
+  },
+
+  // ── Server footer
+  serverFooter: { marginTop: spacing.xl, alignItems: 'center' },
+  serverLabel: {
+    fontSize: 9,
+    color: colors.tabBarInactive,
+    fontWeight: '700',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+  },
+  serverUrl: { fontSize: 10, color: colors.tabBarInactive, marginTop: spacing.xxs },
+  serverUrlBad: { color: colors.danger, fontWeight: '700' },
 });

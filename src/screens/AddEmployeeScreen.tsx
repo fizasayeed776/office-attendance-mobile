@@ -1,46 +1,96 @@
 import React, { useEffect, useRef, useState } from 'react';
 import {
-  View,
-  Text,
-  ScrollView,
-  StyleSheet,
-  TextInput,
-  TouchableOpacity,
-  ActivityIndicator,
-  Alert,
+  View, Text, ScrollView, StyleSheet, TextInput,
+  TouchableOpacity, ActivityIndicator, Alert, Platform,
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import api from '../api/client';
-import { colors, spacing, radius } from '../theme/colors';
+import { colors, spacing, radius, shadows, typography } from '../theme/colors';
 
 type Step = 'details' | 'capture';
 
+// ─── shared field component ──────────────────────────────────────────────────
+
+function Field({ label, required, children }: {
+  label: string; required?: boolean; children: React.ReactNode;
+}) {
+  return (
+    <View style={fieldStyles.wrap}>
+      <Text style={fieldStyles.label}>
+        {label}{required && <Text style={fieldStyles.asterisk}> *</Text>}
+      </Text>
+      {children}
+    </View>
+  );
+}
+const fieldStyles = StyleSheet.create({
+  wrap: { marginBottom: spacing.md },
+  label: {
+    fontSize: typography.sm, fontWeight: '600',
+    color: colors.ink2, marginBottom: spacing.xs, letterSpacing: 0.2,
+  },
+  asterisk: { color: colors.danger },
+});
+
+function Input({
+  value, onChangeText, placeholder, keyboardType, autoCapitalize,
+}: {
+  value: string; onChangeText: (v: string) => void;
+  placeholder?: string; keyboardType?: any; autoCapitalize?: any;
+}) {
+  return (
+    <TextInput
+      style={inputStyle}
+      value={value}
+      onChangeText={onChangeText}
+      placeholder={placeholder}
+      placeholderTextColor={colors.mutedLight}
+      keyboardType={keyboardType}
+      autoCapitalize={autoCapitalize ?? 'sentences'}
+    />
+  );
+}
+const inputStyle = {
+  backgroundColor: colors.bg,
+  borderWidth: 1.5,
+  borderColor: colors.border,
+  borderRadius: radius.md,
+  paddingHorizontal: spacing.md,
+  paddingVertical: 13,
+  fontSize: typography.md,
+  color: colors.ink,
+};
+
+// ─── main screen ─────────────────────────────────────────────────────────────
+
 export default function AddEmployeeScreen({ navigation }: any) {
-  const [step, setStep] = useState<Step>('details');
+  const [step, setStep]           = useState<Step>('details');
   const [employeeId, setEmployeeId] = useState('');
-  const [name, setName] = useState('');
+  const [name, setName]           = useState('');
   const [department, setDepartment] = useState('');
   const [designation, setDesignation] = useState('');
-  const [email, setEmail] = useState('');
-  const [phone, setPhone] = useState('');
+  const [email, setEmail]         = useState('');
+  const [phone, setPhone]         = useState('');
   const [employeePk, setEmployeePk] = useState<number | null>(null);
   const [sampleCount, setSampleCount] = useState(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading]     = useState(false);
   const [captureLoading, setCaptureLoading] = useState(false);
   const [trainLoading, setTrainLoading] = useState(false);
-  const [error, setError] = useState('');
+  const [error, setError]         = useState('');
 
   const [permission, requestPermission] = useCameraPermissions();
   const cameraRef = useRef<CameraView>(null);
 
   useEffect(() => {
-    if (step === 'capture' && permission?.granted !== true) {
-      requestPermission();
-    }
+    if (step === 'capture' && !permission?.granted) requestPermission();
   }, [step, permission, requestPermission]);
 
   const onSubmitDetails = async () => {
     setError('');
+    if (!employeeId.trim() || !name.trim()) {
+      setError('Employee ID and name are required.');
+      return;
+    }
     setLoading(true);
     try {
       const { data } = await api.post('/api/employees/', {
@@ -61,133 +111,197 @@ export default function AddEmployeeScreen({ navigation }: any) {
   };
 
   const onCaptureSample = async () => {
-    if (!cameraRef.current || !employeePk) {
-      return;
-    }
+    if (!cameraRef.current || !employeePk) return;
     if (!permission?.granted) {
-      Alert.alert('Camera permission required', 'Please allow camera access to capture employee face data.');
+      Alert.alert('Permission required', 'Camera access is needed to capture face data.');
       return;
     }
-
     setCaptureLoading(true);
     setError('');
     try {
-      const photo = await cameraRef.current.takePictureAsync({ base64: true, quality: 0.6 });
-      const payload = { image: `data:image/jpeg;base64,${photo.base64}` };
-      const { data } = await api.post(`/api/employees/${employeePk}/capture/`, payload);
+      const photo = await cameraRef.current.takePictureAsync({ base64: true, quality: 0.65 });
+      const { data } = await api.post(`/api/employees/${employeePk}/capture/`, {
+        image: `data:image/jpeg;base64,${photo.base64}`,
+      });
       setSampleCount(data.sample_count || sampleCount + 1);
     } catch (err: any) {
-      setError(err.message || 'Unable to capture face sample.');
+      setError(err.message || 'Unable to capture sample.');
     } finally {
       setCaptureLoading(false);
     }
   };
 
-  const onTrainRecognizer = async () => {
-    if (!employeePk) {
-      return;
-    }
+  const onTrain = async () => {
+    if (!employeePk) return;
     setTrainLoading(true);
     setError('');
     try {
       await api.post(`/api/employees/${employeePk}/train/`);
-      Alert.alert('Face registration complete', 'The employee face data has been trained and is ready for recognition.');
+      Alert.alert('Face registration complete', 'The employee is now registered for face recognition.');
       navigation.goBack();
     } catch (err: any) {
-      setError(err.message || 'Unable to train face recognizer.');
+      setError(err.message || 'Unable to train recognizer.');
     } finally {
       setTrainLoading(false);
     }
   };
 
-  const onBackToDetails = () => {
-    setStep('details');
-    setSampleCount(0);
-    setEmployeePk(null);
-    setError('');
-  };
+  const REQUIRED = 3;
+  const canTrain = sampleCount >= REQUIRED;
 
+  // ══ Capture step ══════════════════════════════════════════════════════════
   if (step === 'capture') {
     return (
-      <View style={styles.screen}>
-        <Text style={styles.heading}>Capture Face Samples</Text>
-        <Text style={styles.helpText}>
-          Take at least 3 clear face samples so the recognition model can register this employee.
-        </Text>
+      <View style={styles.captureScreen}>
+        {/* Camera */}
         <View style={styles.cameraWrap}>
           {permission?.granted ? (
             <CameraView ref={cameraRef} style={styles.camera} facing="front" />
           ) : (
-            <View style={styles.permissionCard}>
-              <Text style={styles.permissionText}>Camera access is required to register an employee's face.</Text>
-              <TouchableOpacity style={styles.permissionButton} onPress={requestPermission}>
-                <Text style={styles.permissionButtonText}>Grant Camera Access</Text>
+            <View style={styles.permissionWrap}>
+              <Text style={styles.permissionTitle}>Camera access needed</Text>
+              <Text style={styles.permissionBody}>
+                Camera permission is required to register an employee's face for attendance.
+              </Text>
+              <TouchableOpacity style={styles.permissionBtn} onPress={requestPermission}>
+                <Text style={styles.permissionBtnText}>Grant Access</Text>
               </TouchableOpacity>
             </View>
           )}
         </View>
 
-        <View style={styles.statusRow}>
-          <Text style={styles.statusLabel}>Employee ID:</Text>
-          <Text style={styles.statusValue}>{employeeId}</Text>
+        {/* Status */}
+        <View style={styles.captureInfo}>
+          <View style={styles.captureInfoRow}>
+            <Text style={styles.captureInfoLabel}>Employee</Text>
+            <Text style={styles.captureInfoValue}>{name} · {employeeId}</Text>
+          </View>
+          <View style={styles.captureInfoRow}>
+            <Text style={styles.captureInfoLabel}>Samples captured</Text>
+            <View style={{ flexDirection: 'row', alignItems: 'center', gap: spacing.sm }}>
+              {Array.from({ length: REQUIRED }).map((_, i) => (
+                <View
+                  key={i}
+                  style={[
+                    styles.sampleDot,
+                    i < sampleCount ? styles.sampleDotFilled : styles.sampleDotEmpty,
+                  ]}
+                />
+              ))}
+              <Text style={styles.captureInfoValue}>{sampleCount} / {REQUIRED} min</Text>
+            </View>
+          </View>
         </View>
-        <View style={styles.statusRow}>
-          <Text style={styles.statusLabel}>Captured samples:</Text>
-          <Text style={styles.statusValue}>{sampleCount}</Text>
+
+        {!!error && (
+          <View style={styles.errorBanner}>
+            <Text style={styles.errorText}>{error}</Text>
+          </View>
+        )}
+
+        {/* Actions */}
+        <View style={styles.captureActions}>
+          <TouchableOpacity
+            style={styles.captureBtn}
+            onPress={onCaptureSample}
+            disabled={captureLoading || !permission?.granted}
+            activeOpacity={0.8}
+          >
+            {captureLoading
+              ? <ActivityIndicator color="#fff" />
+              : <Text style={styles.captureBtnText}>📷  Capture Sample</Text>}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.trainBtn, !canTrain && styles.trainBtnDisabled]}
+            onPress={onTrain}
+            disabled={!canTrain || trainLoading}
+            activeOpacity={0.8}
+          >
+            {trainLoading
+              ? <ActivityIndicator color={canTrain ? '#fff' : colors.muted} />
+              : <Text style={[styles.trainBtnText, !canTrain && styles.trainBtnTextDisabled]}>
+                  ✓  Register Face
+                </Text>}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.backBtn}
+            onPress={() => { setStep('details'); setSampleCount(0); setEmployeePk(null); }}
+            disabled={captureLoading || trainLoading}
+          >
+            <Text style={styles.backBtnText}>← Edit details</Text>
+          </TouchableOpacity>
         </View>
-        {!!error && <Text style={styles.errorText}>{error}</Text>}
-
-        <TouchableOpacity style={styles.captureButton} onPress={onCaptureSample} disabled={captureLoading || !permission?.granted}>
-          {captureLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.captureButtonText}>Capture Face Sample</Text>}
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.trainButton, sampleCount < 3 && styles.disabledButton]}
-          onPress={onTrainRecognizer}
-          disabled={trainLoading || sampleCount < 3}
-        >
-          {trainLoading ? <ActivityIndicator color="#fff" /> : <Text style={styles.trainButtonText}>Train Recognizer</Text>}
-        </TouchableOpacity>
-
-        <TouchableOpacity style={styles.cancelButton} onPress={onBackToDetails} disabled={captureLoading || trainLoading}>
-          <Text style={styles.cancelButtonText}>Edit Details</Text>
-        </TouchableOpacity>
       </View>
     );
   }
 
+  // ══ Details step ══════════════════════════════════════════════════════════
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.heading}>Add Employee</Text>
-      {!!error && <Text style={styles.errorText}>{error}</Text>}
-
-      <View style={styles.field}>
-        <Text style={styles.label}>Employee ID</Text>
-        <TextInput value={employeeId} onChangeText={setEmployeeId} style={styles.input} autoCapitalize="none" />
-      </View>
-      <View style={styles.field}>
-        <Text style={styles.label}>Name</Text>
-        <TextInput value={name} onChangeText={setName} style={styles.input} />
-      </View>
-      <View style={styles.field}>
-        <Text style={styles.label}>Department</Text>
-        <TextInput value={department} onChangeText={setDepartment} style={styles.input} />
-      </View>
-      <View style={styles.field}>
-        <Text style={styles.label}>Designation</Text>
-        <TextInput value={designation} onChangeText={setDesignation} style={styles.input} />
-      </View>
-      <View style={styles.field}>
-        <Text style={styles.label}>Email</Text>
-        <TextInput value={email} onChangeText={setEmail} style={styles.input} autoCapitalize="none" keyboardType="email-address" />
-      </View>
-      <View style={styles.field}>
-        <Text style={styles.label}>Phone</Text>
-        <TextInput value={phone} onChangeText={setPhone} style={styles.input} keyboardType="phone-pad" />
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.content}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
+      {/* ── Step banner ── */}
+      <View style={styles.stepBanner}>
+        <View style={styles.stepDot}><Text style={styles.stepDotText}>1</Text></View>
+        <Text style={styles.stepLabel}>Employee details</Text>
+        <View style={styles.stepLine} />
+        <View style={[styles.stepDot, styles.stepDotInactive]}><Text style={[styles.stepDotText, styles.stepDotTextInactive]}>2</Text></View>
+        <Text style={[styles.stepLabel, styles.stepLabelInactive]}>Face capture</Text>
       </View>
 
-      <TouchableOpacity style={styles.submitButton} onPress={onSubmitDetails} disabled={loading}>
-        {loading ? <ActivityIndicator color="#fff" /> : <Text style={styles.submitText}>Save and Capture Face</Text>}
+      {!!error && (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
+
+      {/* ── Identity section ── */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Identity</Text>
+        <Field label="Employee ID" required>
+          <Input value={employeeId} onChangeText={setEmployeeId} placeholder="e.g. EMP-0005" autoCapitalize="characters" />
+        </Field>
+        <Field label="Full name" required>
+          <Input value={name} onChangeText={setName} placeholder="e.g. Aisha Khan" />
+        </Field>
+      </View>
+
+      {/* ── Role section ── */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Role</Text>
+        <Field label="Department">
+          <Input value={department} onChangeText={setDepartment} placeholder="e.g. Engineering" />
+        </Field>
+        <Field label="Designation">
+          <Input value={designation} onChangeText={setDesignation} placeholder="e.g. Senior Developer" />
+        </Field>
+      </View>
+
+      {/* ── Contact section ── */}
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Contact</Text>
+        <Field label="Email">
+          <Input value={email} onChangeText={setEmail} placeholder="email@company.com" keyboardType="email-address" autoCapitalize="none" />
+        </Field>
+        <Field label="Phone">
+          <Input value={phone} onChangeText={setPhone} placeholder="+92 300 0000000" keyboardType="phone-pad" autoCapitalize="none" />
+        </Field>
+      </View>
+
+      <TouchableOpacity
+        style={[styles.submitBtn, loading && styles.submitBtnDisabled]}
+        onPress={onSubmitDetails}
+        disabled={loading}
+        activeOpacity={0.85}
+      >
+        {loading
+          ? <ActivityIndicator color="#fff" />
+          : <Text style={styles.submitBtnText}>Save & Capture Face →</Text>}
       </TouchableOpacity>
     </ScrollView>
   );
@@ -195,72 +309,142 @@ export default function AddEmployeeScreen({ navigation }: any) {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  content: { padding: spacing.lg, paddingBottom: spacing.xxl },
-  heading: { fontSize: 22, fontWeight: '700', color: colors.ink, marginBottom: spacing.lg },
-  helpText: { color: colors.muted, marginBottom: spacing.lg, lineHeight: 20 },
-  errorText: { color: colors.danger, marginBottom: spacing.md },
-  field: { marginBottom: spacing.md },
-  label: { color: colors.muted, marginBottom: spacing.xs, fontSize: 13 },
-  input: {
+  content: { padding: spacing.lg, paddingBottom: spacing.xxxl },
+
+  // ── Step banner
+  stepBanner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.sm,
+    marginBottom: spacing.xl,
+  },
+  stepDot: {
+    width: 28, height: 28, borderRadius: 14,
+    backgroundColor: colors.brand,
+    alignItems: 'center', justifyContent: 'center',
+  },
+  stepDotInactive: { backgroundColor: colors.bgDeep },
+  stepDotText: { fontSize: typography.sm, fontWeight: '700', color: '#fff' },
+  stepDotTextInactive: { color: colors.muted },
+  stepLabel: { fontSize: typography.sm, fontWeight: '600', color: colors.brand },
+  stepLabelInactive: { color: colors.muted },
+  stepLine: { flex: 1, height: 1.5, backgroundColor: colors.border },
+
+  // ── Section
+  section: {
     backgroundColor: colors.card,
-    borderRadius: radius.md,
+    borderRadius: radius.xl,
+    padding: spacing.lg,
+    marginBottom: spacing.md,
     borderWidth: 1,
     borderColor: colors.border,
-    paddingHorizontal: spacing.md,
-    paddingVertical: spacing.sm,
-    color: colors.ink2,
-    fontSize: 14,
+    ...shadows.sm,
   },
-  submitButton: {
-    backgroundColor: colors.brand,
+  sectionTitle: {
+    fontSize: typography.sm,
+    fontWeight: '700',
+    color: colors.muted,
+    letterSpacing: 0.6,
+    textTransform: 'uppercase',
+    marginBottom: spacing.md,
+  },
+
+  // ── Error
+  errorBanner: {
+    backgroundColor: colors.dangerSoft,
     borderRadius: radius.md,
-    paddingVertical: 14,
-    alignItems: 'center',
-    marginTop: spacing.lg,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.danger,
   },
-  submitText: { color: '#fff', fontWeight: '700', fontSize: 15 },
-  cameraWrap: {
-    aspectRatio: 3 / 4,
+  errorText: { color: colors.danger, fontSize: typography.base },
+
+  // ── Submit
+  submitBtn: {
+    backgroundColor: colors.brand,
     borderRadius: radius.lg,
+    paddingVertical: 16,
+    alignItems: 'center',
+    marginTop: spacing.sm,
+    ...shadows.md,
+  },
+  submitBtnDisabled: { opacity: 0.7 },
+  submitBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md, letterSpacing: 0.3 },
+
+  // ══ Capture step
+  captureScreen: { flex: 1, backgroundColor: colors.sidebar },
+
+  cameraWrap: {
+    flex: 1,
+    margin: spacing.lg,
+    borderRadius: radius.xl,
     overflow: 'hidden',
     borderWidth: 2,
     borderColor: colors.brand,
-    marginBottom: spacing.md,
-    backgroundColor: colors.card,
-    justifyContent: 'center',
+    backgroundColor: colors.sidebarBorder,
+    ...shadows.lg,
+  },
+  camera: { flex: 1 },
+
+  permissionWrap: {
+    flex: 1, alignItems: 'center', justifyContent: 'center',
+    padding: spacing.xl, gap: spacing.md,
+  },
+  permissionTitle: { color: '#fff', fontSize: typography.xl, fontWeight: '700', textAlign: 'center' },
+  permissionBody: { color: colors.mutedLight, fontSize: typography.base, textAlign: 'center', lineHeight: 22 },
+  permissionBtn: {
+    backgroundColor: colors.brand, borderRadius: radius.md,
+    paddingVertical: 12, paddingHorizontal: spacing.xl, marginTop: spacing.sm,
+  },
+  permissionBtnText: { color: '#fff', fontWeight: '700' },
+
+  captureInfo: {
+    backgroundColor: colors.sidebarBorder,
+    marginHorizontal: spacing.lg,
+    borderRadius: radius.lg,
+    padding: spacing.md,
+    gap: spacing.sm,
+    marginBottom: spacing.sm,
+  },
+  captureInfoRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     alignItems: 'center',
   },
-  camera: { flex: 1, width: '100%' },
-  permissionCard: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: spacing.lg },
-  permissionText: { color: colors.ink2, textAlign: 'center', marginBottom: spacing.md },
-  permissionButton: { backgroundColor: colors.brand, paddingVertical: 12, paddingHorizontal: 20, borderRadius: radius.sm },
-  permissionButtonText: { color: '#fff', fontWeight: '700' },
-  statusRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.sm },
-  statusLabel: { color: colors.muted },
-  statusValue: { color: colors.ink, fontWeight: '700' },
-  captureButton: {
+  captureInfoLabel: { fontSize: typography.sm, color: colors.mutedLight },
+  captureInfoValue: { fontSize: typography.sm, color: '#fff', fontWeight: '600' },
+
+  sampleDot: { width: 10, height: 10, borderRadius: 5 },
+  sampleDotFilled: { backgroundColor: colors.brand },
+  sampleDotEmpty: { backgroundColor: colors.sidebarBorder, borderWidth: 1, borderColor: colors.mutedLight },
+
+  captureActions: {
+    padding: spacing.lg,
+    gap: spacing.md,
+    paddingBottom: Platform.OS === 'android' ? spacing.xl : spacing.lg,
+  },
+
+  captureBtn: {
     backgroundColor: colors.brand,
-    borderRadius: radius.md,
-    paddingVertical: 14,
+    borderRadius: radius.lg,
+    paddingVertical: 15,
     alignItems: 'center',
-    marginBottom: spacing.sm,
+    ...shadows.md,
   },
-  captureButtonText: { color: '#fff', fontWeight: '700', fontSize: 15 },
-  trainButton: {
+  captureBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
+
+  trainBtn: {
     backgroundColor: colors.success,
-    borderRadius: radius.md,
-    paddingVertical: 14,
+    borderRadius: radius.lg,
+    paddingVertical: 15,
     alignItems: 'center',
-    marginBottom: spacing.sm,
+    ...shadows.sm,
   },
-  trainButtonText: { color: '#fff', fontWeight: '700', fontSize: 15 },
-  cancelButton: {
-    borderWidth: 1,
-    borderColor: colors.border,
-    borderRadius: radius.md,
-    paddingVertical: 14,
-    alignItems: 'center',
-  },
-  cancelButtonText: { color: colors.ink2, fontWeight: '700' },
-  disabledButton: { backgroundColor: colors.muted },
+  trainBtnDisabled: { backgroundColor: colors.bgDeep },
+  trainBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
+  trainBtnTextDisabled: { color: colors.muted },
+
+  backBtn: { alignItems: 'center', paddingVertical: spacing.sm },
+  backBtnText: { color: colors.mutedLight, fontWeight: '600', fontSize: typography.base },
 });

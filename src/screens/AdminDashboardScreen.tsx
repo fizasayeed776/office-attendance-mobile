@@ -1,116 +1,236 @@
 import { useEffect, useState } from 'react';
-import { View, Text, ScrollView, StyleSheet, ActivityIndicator } from 'react-native';
+import {
+  View, Text, ScrollView, StyleSheet, ActivityIndicator,
+  RefreshControl, TouchableOpacity,
+} from 'react-native';
+import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
-import { colors, spacing, radius } from '../theme/colors';
+import { colors, spacing, radius, shadows, typography } from '../theme/colors';
 
-type AttendanceSummary = {
+type AttendanceRow = {
   employee_name: string;
+  employee_id: string;
   department: string;
   date: string;
   check_in: string | null;
   check_out: string | null;
+  is_late: boolean;
 };
 
-export default function AdminDashboardScreen() {
+type Summary = {
+  totalEmployees: number;
+  presentToday: number;
+  absentToday: number;
+  todaysScans: number;
+  dateTag: string;
+};
+
+const STAT_CONFIGS = [
+  { key: 'totalEmployees',  label: 'TOTAL EMPLOYEES', badge: 'Registered',     badgeBg: colors.brandSoft,   badgeFg: colors.brand   },
+  { key: 'presentToday',    label: 'PRESENT TODAY',   badge: 'Checked in',     badgeBg: colors.successSoft, badgeFg: colors.success },
+  { key: 'absentToday',     label: 'ABSENT TODAY',    badge: 'Not yet scanned',badgeBg: colors.warnSoft,    badgeFg: colors.warn    },
+  { key: 'todaysScans',     label: "TODAY'S SCANS",   badge: null,             badgeBg: '',                 badgeFg: ''             },
+];
+
+const QUICK_ACTIONS = [
+  { label: 'Add Employee',    icon: '👤',  tab: 'Employees', screen: 'AddEmployee'       },
+  { label: 'Employees List',  icon: '👥',  tab: 'Employees', screen: 'EmployeeList'      },
+  { label: 'Mark Attendance', icon: '📷',  tab: 'Attendance',screen: 'MarkAttendance'    },
+  { label: 'Attendance List', icon: '📋',  tab: 'Attendance',screen: 'AttendanceList'    },
+];
+
+export default function AdminDashboardScreen({ navigation }: any) {
+  const { adminUser } = useAuth();
   const [loading, setLoading] = useState(true);
-  const [summary, setSummary] = useState({
-    totalEmployees: 0,
-    presentToday: 0,
-    absentToday: 0,
-    todaysScans: 0,
-    dateTag: '',
+  const [refreshing, setRefreshing] = useState(false);
+  const [summary, setSummary] = useState<Summary>({
+    totalEmployees: 0, presentToday: 0, absentToday: 0, todaysScans: 0, dateTag: '',
   });
-  const [recentAttendance, setRecentAttendance] = useState<AttendanceSummary[]>([]);
+  const [recentAttendance, setRecentAttendance] = useState<AttendanceRow[]>([]);
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    async function loadDashboard() {
-      setError('');
-      setLoading(true);
-      try {
-        const [employeesRes, attendanceRes] = await Promise.all([
-          api.get('/api/employees/'),
-          api.get('/api/attendance/?date=' + new Date().toISOString().slice(0, 10)),
-        ]);
+  const load = async () => {
+    setError('');
+    try {
+      const today = new Date().toISOString().slice(0, 10);
+      const [empRes, attRes] = await Promise.all([
+        api.get('/api/employees/'),
+        api.get(`/api/attendance/?date=${today}`),
+      ]);
+      const employees  = empRes.data.employees  || [];
+      const attendance = attRes.data.attendance || [];
+      const presentIds = new Set(attendance.map((a: any) => a.employee_id));
 
-        const employees = employeesRes.data.employees || [];
-        const today = new Date().toISOString().slice(0, 10);
-        const attendance = attendanceRes.data.attendance || [];
-        const presentIds = new Set(attendance.map((a: any) => a.employee_id));
-        const isHolidayToday = false;
-
-        setSummary({
-          totalEmployees: employees.length,
-          presentToday: presentIds.size,
-          absentToday: isHolidayToday ? 0 : Math.max(employees.length - presentIds.size, 0),
-          todaysScans: attendance.length,
-          dateTag: isHolidayToday ? `${today} · Holiday` : today,
-        });
-
-        setRecentAttendance(attendance.slice(0, 6));
-      } catch (err: any) {
-        console.error('AdminDashboardScreen loadDashboard failed', err);
-        setError(err.message || 'Unable to load dashboard.');
-      } finally {
-        setLoading(false);
-      }
+      setSummary({
+        totalEmployees: employees.length,
+        presentToday:   presentIds.size,
+        absentToday:    Math.max(employees.length - presentIds.size, 0),
+        todaysScans:    attendance.length,
+        dateTag:        today,
+      });
+      setRecentAttendance(attendance.slice(0, 8));
+    } catch (err: any) {
+      setError(err.message || 'Unable to load dashboard.');
+    } finally {
+      setLoading(false);
     }
+  };
 
-    loadDashboard();
-  }, []);
+  useEffect(() => { load(); }, []);
+
+  const onRefresh = async () => { setRefreshing(true); await load(); setRefreshing(false); };
+
+  const navigate = (tab: string, screen: string) => {
+    navigation.navigate(tab, { screen });
+  };
+
+  const greeting = () => {
+    const h = new Date().getHours();
+    if (h < 12) return 'Good morning';
+    if (h < 17) return 'Good afternoon';
+    return 'Good evening';
+  };
 
   if (loading) {
     return (
-      <View style={styles.loadingContainer}>
+      <View style={styles.loadingWrap}>
         <ActivityIndicator size="large" color={colors.brand} />
       </View>
     );
   }
 
   return (
-    <ScrollView style={styles.screen} contentContainerStyle={styles.content}>
-      <Text style={styles.heading}>Admin Dashboard</Text>
-      {!!error && <Text style={styles.error}>{error}</Text>}
-
-      <View style={styles.statsRow}>
-        <View style={styles.statCard}>
-          <Text style={styles.statLabel}>Total Employees</Text>
-          <Text style={styles.statValue}>{summary.totalEmployees}</Text>
+    <ScrollView
+      style={styles.screen}
+      contentContainerStyle={styles.content}
+      refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand} />}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* ── Header ── */}
+      <View style={styles.header}>
+        <View>
+          <Text style={styles.greeting}>{greeting()},</Text>
+          <Text style={styles.adminName}>{adminUser?.name ?? 'Administrator'}</Text>
         </View>
-        <View style={[styles.statCard, styles.statCardSuccess]}>
-          <Text style={styles.statLabel}>Present Today</Text>
-          <Text style={styles.statValue}>{summary.presentToday}</Text>
-        </View>
-      </View>
-
-      <View style={styles.statsRow}>
-        <View style={[styles.statCard, styles.statCardWarn]}>
-          <Text style={styles.statLabel}>Absent Today</Text>
-          <Text style={styles.statValue}>{summary.absentToday}</Text>
-        </View>
-        <View style={[styles.statCard, styles.statCardBrand]}>
-          <Text style={styles.statLabel}>Today's Scans</Text>
-          <Text style={styles.statValue}>{summary.todaysScans}</Text>
+        <View style={styles.roleBadge}>
+          <Text style={styles.roleText}>{(adminUser?.staff_role ?? 'ADMIN').toUpperCase()}</Text>
         </View>
       </View>
 
+      {/* ── Date bar ── */}
+      <View style={styles.datebar}>
+        <Text style={styles.datebarText}>
+          {new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
+        </Text>
+      </View>
+
+      {!!error && (
+        <View style={styles.errorBanner}>
+          <Text style={styles.errorText}>{error}</Text>
+        </View>
+      )}
+
+      {/* ── Stat cards (2×2 grid matching web) ── */}
+      <View style={styles.statsGrid}>
+        {STAT_CONFIGS.map((cfg) => {
+          const value = summary[cfg.key as keyof Summary];
+          return (
+            <View key={cfg.key} style={styles.statCard}>
+              <Text style={styles.statLabel}>{cfg.label}</Text>
+              <Text style={styles.statValue}>{value}</Text>
+              {cfg.badge ? (
+                <View style={[styles.statBadge, { backgroundColor: cfg.badgeBg }]}>
+                  <Text style={[styles.statBadgeText, { color: cfg.badgeFg }]}>{cfg.badge}</Text>
+                </View>
+              ) : (
+                <View style={[styles.statBadge, { backgroundColor: colors.brandSoft }]}>
+                  <Text style={[styles.statBadgeText, { color: colors.brand }]}>{summary.dateTag}</Text>
+                </View>
+              )}
+            </View>
+          );
+        })}
+      </View>
+
+      {/* ── Quick actions (2×2 grid matching web shortcuts) ── */}
+      <Text style={styles.sectionTitle}>Quick Actions</Text>
+      <View style={styles.actionsGrid}>
+        {QUICK_ACTIONS.map((action) => (
+          <TouchableOpacity
+            key={action.label}
+            style={styles.actionCard}
+            onPress={() => navigate(action.tab, action.screen)}
+            activeOpacity={0.75}
+          >
+            <Text style={styles.actionIcon}>{action.icon}</Text>
+            <Text style={styles.actionLabel}>{action.label}</Text>
+          </TouchableOpacity>
+        ))}
+      </View>
+
+      {/* ── Recent attendance table ── */}
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Recent Attendance</Text>
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>Recent Attendance</Text>
+          <TouchableOpacity onPress={() => navigate('Attendance', 'AttendanceList')}>
+            <Text style={styles.viewAll}>View all →</Text>
+          </TouchableOpacity>
+        </View>
+
+        {/* Table header */}
+        <View style={styles.tableHeader}>
+          <Text style={[styles.tableHeaderCell, { flex: 2 }]}>EMPLOYEE</Text>
+          <Text style={[styles.tableHeaderCell, { flex: 1.2 }]}>DATE</Text>
+          <Text style={[styles.tableHeaderCell, { flex: 1 }]}>IN</Text>
+          <Text style={[styles.tableHeaderCell, { flex: 1 }]}>OUT</Text>
+          <Text style={[styles.tableHeaderCell, { flex: 1, textAlign: 'right' }]}>STATUS</Text>
+        </View>
+
         {recentAttendance.length ? (
-          recentAttendance.map((attendance, index) => (
-            <View key={index} style={styles.row}>
-              <View>
-                <Text style={styles.rowTitle}>{attendance.employee_name}</Text>
-                <Text style={styles.rowSubtitle}>{attendance.department}</Text>
+          recentAttendance.map((row, i) => (
+            <View
+              key={`${row.employee_id}-${row.date}-${i}`}
+              style={[styles.tableRow, i % 2 === 1 && styles.tableRowAlt]}
+            >
+              {/* Avatar + name */}
+              <View style={[styles.tableCell, { flex: 2, flexDirection: 'row', alignItems: 'center', gap: spacing.sm }]}>
+                <View style={styles.miniAvatar}>
+                  <Text style={styles.miniAvatarText}>
+                    {(row.employee_name?.[0] ?? '?').toUpperCase()}
+                    {(row.employee_name?.split(' ')?.[1]?.[0] ?? '').toUpperCase()}
+                  </Text>
+                </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.tableCellPrimary} numberOfLines={1}>{row.employee_name}</Text>
+                  <Text style={styles.tableCellSecondary} numberOfLines={1}>{row.employee_id}</Text>
+                </View>
               </View>
-              <View style={styles.rowMeta}>
-                <Text style={styles.rowMetaText}>{attendance.date}</Text>
-                <Text style={styles.rowMetaText}>{attendance.check_in || '—'} / {attendance.check_out || '—'}</Text>
+
+              <Text style={[styles.tableCellText, { flex: 1.2 }]}>{row.date}</Text>
+              <Text style={[styles.tableCellText, { flex: 1 }]}>{row.check_in || '—'}</Text>
+              <Text style={[styles.tableCellText, { flex: 1 }]}>{row.check_out || '—'}</Text>
+
+              <View style={{ flex: 1, alignItems: 'flex-end' }}>
+                <View style={[
+                  styles.statusChip,
+                  row.is_late
+                    ? { backgroundColor: colors.lateBg }
+                    : { backgroundColor: colors.presentBg },
+                ]}>
+                  <Text style={[
+                    styles.statusChipText,
+                    { color: row.is_late ? colors.lateFg : colors.presentFg },
+                  ]}>
+                    {row.is_late ? 'Late' : 'On time'}
+                  </Text>
+                </View>
               </View>
             </View>
           ))
         ) : (
-          <Text style={styles.empty}>No attendance records for today.</Text>
+          <View style={styles.emptyRow}>
+            <Text style={styles.emptyText}>No attendance records today.</Text>
+          </View>
         )}
       </View>
     </ScrollView>
@@ -119,30 +239,183 @@ export default function AdminDashboardScreen() {
 
 const styles = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
-  content: { padding: spacing.lg, paddingBottom: spacing.xxl },
-  heading: { fontSize: 24, fontWeight: '700', color: colors.ink, marginBottom: spacing.lg },
-  error: { color: colors.danger, marginBottom: spacing.md },
-  statsRow: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: spacing.lg, gap: spacing.sm },
+  content: { padding: spacing.lg, paddingBottom: spacing.xxxl },
+  loadingWrap: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
+
+  // ── Header
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'flex-start',
+    marginBottom: spacing.sm,
+  },
+  greeting: { fontSize: typography.base, color: colors.muted, fontWeight: '500' },
+  adminName: { fontSize: typography.xxl, fontWeight: '800', color: colors.ink, marginTop: 2 },
+  roleBadge: {
+    backgroundColor: colors.brandSoft,
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.xs,
+  },
+  roleText: { fontSize: typography.xs, fontWeight: '700', color: colors.brand, letterSpacing: 0.5 },
+
+  // ── Date bar
+  datebar: {
+    backgroundColor: colors.card,
+    borderRadius: radius.md,
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    marginBottom: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+  },
+  datebarText: { fontSize: typography.sm, color: colors.muted, fontWeight: '500' },
+
+  // ── Error
+  errorBanner: {
+    backgroundColor: colors.dangerSoft,
+    borderRadius: radius.md,
+    padding: spacing.md,
+    marginBottom: spacing.md,
+    borderLeftWidth: 3,
+    borderLeftColor: colors.danger,
+  },
+  errorText: { color: colors.danger, fontSize: typography.base },
+
+  // ── Stats grid
+  statsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+    marginBottom: spacing.xl,
+  },
   statCard: {
-    flex: 1,
+    width: '47.5%',
     backgroundColor: colors.card,
     borderRadius: radius.lg,
     padding: spacing.lg,
     borderWidth: 1,
     borderColor: colors.border,
+    ...shadows.sm,
   },
-  statCardSuccess: { backgroundColor: colors.successSoft, borderColor: 'rgba(29, 185, 84, 0.3)' },
-  statCardWarn: { backgroundColor: colors.warnSoft, borderColor: 'rgba(245, 166, 35, 0.3)' },
-  statCardBrand: { backgroundColor: colors.brandSoft, borderColor: 'rgba(14, 124, 134, 0.3)' },
-  statLabel: { color: colors.muted, fontSize: 13, marginBottom: spacing.xs },
-  statValue: { color: colors.ink, fontSize: 28, fontWeight: '700' },
-  section: { backgroundColor: colors.card, borderRadius: radius.lg, padding: spacing.lg, borderWidth: 1, borderColor: colors.border },
-  sectionTitle: { fontSize: 18, fontWeight: '700', color: colors.ink, marginBottom: spacing.md },
-  row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.border },
-  rowTitle: { fontSize: 15, fontWeight: '700', color: colors.ink },
-  rowSubtitle: { color: colors.muted, fontSize: 13 },
-  rowMeta: { alignItems: 'flex-end' },
-  rowMetaText: { color: colors.muted, fontSize: 12 },
-  empty: { color: colors.muted, textAlign: 'center', paddingVertical: spacing.lg },
-  loadingContainer: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center' },
+  statLabel: {
+    fontSize: typography.xs,
+    fontWeight: '700',
+    color: colors.muted,
+    letterSpacing: 0.6,
+    marginBottom: spacing.sm,
+  },
+  statValue: {
+    fontSize: 36,
+    fontWeight: '800',
+    color: colors.ink,
+    lineHeight: 42,
+    marginBottom: spacing.sm,
+  },
+  statBadge: {
+    alignSelf: 'flex-start',
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: spacing.xxs,
+  },
+  statBadgeText: { fontSize: typography.xs, fontWeight: '700' },
+
+  // ── Quick actions
+  actionsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    gap: spacing.md,
+    marginBottom: spacing.xl,
+  },
+  actionCard: {
+    width: '47.5%',
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    alignItems: 'flex-start',
+    gap: spacing.sm,
+    ...shadows.sm,
+  },
+  actionIcon: { fontSize: 24 },
+  actionLabel: { fontSize: typography.md, fontWeight: '700', color: colors.ink },
+
+  // ── Section
+  section: {
+    backgroundColor: colors.card,
+    borderRadius: radius.lg,
+    borderWidth: 1,
+    borderColor: colors.border,
+    overflow: 'hidden',
+    ...shadows.sm,
+  },
+  sectionHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.md,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  sectionTitle: {
+    fontSize: typography.lg,
+    fontWeight: '700',
+    color: colors.ink,
+    marginBottom: spacing.md,
+  },
+  viewAll: { fontSize: typography.sm, color: colors.brand, fontWeight: '600' },
+
+  // ── Table
+  tableHeader: {
+    flexDirection: 'row',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    backgroundColor: colors.bgDeep,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.border,
+  },
+  tableHeaderCell: {
+    fontSize: typography.xs,
+    fontWeight: '700',
+    color: colors.muted,
+    letterSpacing: 0.5,
+  },
+  tableRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingHorizontal: spacing.md,
+    paddingVertical: spacing.sm,
+    borderBottomWidth: 1,
+    borderBottomColor: colors.divider,
+  },
+  tableRowAlt: { backgroundColor: colors.bgDeep },
+  tableCell: { flexDirection: 'row', alignItems: 'center' },
+  tableCellPrimary: { fontSize: typography.sm, fontWeight: '600', color: colors.ink },
+  tableCellSecondary: { fontSize: typography.xs, color: colors.muted, marginTop: 1 },
+  tableCellText: { fontSize: typography.sm, color: colors.ink2 },
+
+  miniAvatar: {
+    width: 30,
+    height: 30,
+    borderRadius: 15,
+    backgroundColor: colors.brandSoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  miniAvatarText: { fontSize: 10, fontWeight: '700', color: colors.brand },
+
+  statusChip: {
+    borderRadius: radius.pill,
+    paddingHorizontal: spacing.sm,
+    paddingVertical: 3,
+  },
+  statusChipText: { fontSize: typography.xs, fontWeight: '700' },
+
+  emptyRow: {
+    padding: spacing.xl,
+    alignItems: 'center',
+  },
+  emptyText: { color: colors.muted, fontSize: typography.base },
 });

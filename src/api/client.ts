@@ -9,15 +9,47 @@ const API_BASE_URL: string =
 
 const TOKEN_KEY = 'attendance_auth_token';
 
+console.log('🌐 ===== API CLIENT INITIALIZATION =====');
+console.log('🌐 Constants.expoConfig:', JSON.stringify(Constants.expoConfig, null, 2));
+console.log('🌐 Constants.expoConfig?.extra:', JSON.stringify(Constants.expoConfig?.extra, null, 2));
+console.log('🌐 API_BASE_URL configured as:', API_BASE_URL);
+console.log('🌐 Using hostname:', new URL(API_BASE_URL).hostname);
+console.log('🌐 Using protocol:', new URL(API_BASE_URL).protocol);
+console.log('🌐 Is HTTPS:', new URL(API_BASE_URL).protocol === 'https:');
+console.log('🌐 ===== END INITIALIZATION =====');
+
 export const tokenStorage = {
   async get(): Promise<string | null> {
-    return SecureStore.getItemAsync(TOKEN_KEY);
+    try {
+      const token = await SecureStore.getItemAsync(TOKEN_KEY);
+      if (token) {
+        console.log('🔑 tokenStorage.get: Token retrieved (length=' + token.length + ')');
+      } else {
+        console.log('🔑 tokenStorage.get: No token found');
+      }
+      return token;
+    } catch (err) {
+      console.error('🔑 tokenStorage.get ERROR:', err);
+      return null;
+    }
   },
   async set(token: string): Promise<void> {
-    await SecureStore.setItemAsync(TOKEN_KEY, token);
+    try {
+      console.log('🔑 tokenStorage.set: Storing token (length=' + token.length + ')');
+      await SecureStore.setItemAsync(TOKEN_KEY, token);
+      console.log('🔑 tokenStorage.set: Token stored successfully');
+    } catch (err) {
+      console.error('🔑 tokenStorage.set ERROR:', err);
+      throw new Error('Failed to save authentication token. Please try again.');
+    }
   },
   async clear(): Promise<void> {
-    await SecureStore.deleteItemAsync(TOKEN_KEY);
+    try {
+      await SecureStore.deleteItemAsync(TOKEN_KEY);
+      console.log('🔑 tokenStorage.clear: Token cleared');
+    } catch (err) {
+      console.error('🔑 tokenStorage.clear ERROR:', err);
+    }
   },
 };
 
@@ -29,24 +61,112 @@ export const api = axios.create({
 
 // Every request automatically carries the mobile auth token, exactly the way
 // the website's app.js automatically attaches the CSRF token to every call.
-api.interceptors.request.use(async (config) => {
-  const token = await tokenStorage.get();
-  if (token) {
-    config.headers = (config.headers ?? {}) as AxiosRequestHeaders;
-    config.headers.Authorization = `Token ${token}`;
+api.interceptors.request.use(
+  async (config) => {
+    try {
+      const token = await tokenStorage.get();
+      if (token) {
+        config.headers = (config.headers ?? {}) as AxiosRequestHeaders;
+        config.headers.Authorization = `Token ${token}`;
+        console.log('🌐 Request interceptor: Authorization header added for', config.url);
+      }
+    } catch (err) {
+      console.error('🌐 Request interceptor ERROR:', err);
+    }
+    return config;
+  },
+  (error) => {
+    console.error('🌐 Request interceptor error', error);
+    return Promise.reject(error);
   }
-  return config;
-});
+);
 
 // Normalizes Django's {"error": "..."} responses into a plain Error, same
 // shape the website's app.js expects from its api() helper.
+// Also handles network errors, CORS errors, and other HTTP errors.
 api.interceptors.response.use(
-  (response) => response,
+  (response) => {
+    console.log(`🌐 Response interceptor SUCCESS: ${response.config.method?.toUpperCase()} ${response.config.url} -> ${response.status}`);
+    return response;
+  },
   (error) => {
-    const message =
-      error?.response?.data?.error ||
-      error?.message ||
-      'Something went wrong. Please check your connection and try again.';
+    console.error('🌐 Response interceptor ERROR:', {
+      message: error?.message,
+      code: error?.code,
+      status: error?.response?.status,
+      statusText: error?.response?.statusText,
+      url: error?.config?.url,
+      isNetworkError: !error?.response,
+      hasResponse: !!error?.response,
+      timestamp: new Date().toISOString(),
+      originalError: error?.toString(),
+    });
+
+    // Network error (no response from server)
+    if (!error?.response) {
+      console.error('🌐 NETWORK ERROR (no response from server):', {
+        code: error?.code,
+        message: error?.message,
+        apiBaseUrl: API_BASE_URL,
+        isTimeout: error?.code === 'ECONNABORTED',
+        isNetworkError: error?.code === 'ERR_NETWORK',
+        isCORS: error?.message?.includes('CORS'),
+      });
+      
+      if (error?.code === 'ECONNABORTED') {
+        const message = 'Request timed out. Please check your internet connection and the server address in your settings.';
+        console.error('🌐 TIMEOUT ERROR:', { apiBaseUrl: API_BASE_URL });
+        return Promise.reject(new Error(message));
+      }
+      
+      if (error?.code === 'ERR_NETWORK' || error?.message?.includes('Network')) {
+        const message = `Network error: Unable to reach ${API_BASE_URL}. Please check your internet connection and ensure the server is accessible.`;
+        console.error('🌐 NETWORK ERROR:', { apiBaseUrl: API_BASE_URL, errorCode: error?.code });
+        return Promise.reject(new Error(message));
+      }
+
+      if (error?.message?.includes('CORS')) {
+        const message = 'CORS error: The server rejected the request. Please ensure the server configuration is correct.';
+        console.error('🌐 CORS ERROR');
+        return Promise.reject(new Error(message));
+      }
+
+      const message = `Connection error: ${error?.message || 'Unable to reach the server'}. Please check your internet connection and try again.`;
+      console.error('🌐 UNKNOWN NETWORK ERROR:', { message, apiBaseUrl: API_BASE_URL });
+      return Promise.reject(new Error(message));
+    }
+
+    // Server responded with error status
+    const status = error?.response?.status;
+    const data = error?.response?.data;
+    
+    // Try to extract error message from response
+    let message = data?.error || data?.message || error?.message || 'Something went wrong.';
+    
+    // Handle specific HTTP status codes
+    if (status === 400) {
+      message = message || 'Invalid request. Please check your input and try again.';
+      console.error('🌐 BAD REQUEST (400):', { message, data });
+    } else if (status === 401) {
+      message = message || 'Invalid username or password.';
+      console.error('🌐 UNAUTHORIZED (401):', { message });
+    } else if (status === 403) {
+      message = message || 'Access denied. You do not have permission to perform this action.';
+      console.error('🌐 FORBIDDEN (403):', { message });
+    } else if (status === 404) {
+      message = message || 'Server endpoint not found. Please check the server configuration.';
+      console.error('🌐 NOT FOUND (404):', { url: error?.config?.url });
+    } else if (status === 500) {
+      message = 'Server error. Please try again later or contact support.';
+      console.error('🌐 SERVER ERROR (500):', { message, data });
+    } else if (status === 503) {
+      message = 'Server is temporarily unavailable. Please try again later.';
+      console.error('🌐 SERVICE UNAVAILABLE (503)');
+    } else {
+      console.error(`🌐 HTTP ERROR ${status}:`, { message, data });
+    }
+
+    console.error('🌐 FINAL ERROR MESSAGE:', message);
     return Promise.reject(new Error(message));
   }
 );
