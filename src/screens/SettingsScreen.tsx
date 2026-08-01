@@ -69,7 +69,7 @@ export default function SettingsScreen({
   return (
     <ScrollView
       style={s.screen}
-      contentContainerStyle={[s.content, { paddingBottom: insets.bottom + spacing.xxxl }]}
+      contentContainerStyle={[s.content, { paddingTop: insets.top + spacing.lg, paddingBottom: insets.bottom + spacing.xxxl }]}
       showsVerticalScrollIndicator={false}
       keyboardShouldPersistTaps="handled"
     >

@@ -3,6 +3,7 @@ import {
   View, Text, ScrollView, StyleSheet, ActivityIndicator,
   RefreshControl, TouchableOpacity,
 } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
 import { colors, spacing, radius, typography, fonts} from '../theme/colors';
@@ -43,6 +44,7 @@ const QUICK_ACTIONS = [
 
 export default function AdminDashboardScreen({ navigation }: any) {
   const { adminUser } = useAuth();
+  const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
   const [summary, setSummary] = useState<Summary>({
@@ -104,7 +106,7 @@ export default function AdminDashboardScreen({ navigation }: any) {
   return (
     <ScrollView
       style={styles.screen}
-      contentContainerStyle={styles.content}
+      contentContainerStyle={[styles.content, { paddingTop: insets.top + spacing.lg }]}
       refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={colors.brand} />}
       showsVerticalScrollIndicator={false}
     >
