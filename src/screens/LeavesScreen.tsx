@@ -4,8 +4,9 @@ import {
   Modal, TextInput, RefreshControl, ActivityIndicator, ScrollView,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 const LEAVE_TYPES = ['Casual Leave', 'Sick Leave', 'Annual Leave', 'Emergency Leave'];
 
@@ -58,7 +59,7 @@ export default function LeavesScreen({ route }: any) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Text style={styles.emptyIcon}>📋</Text>
+            <Ionicons name="document-text-outline" size={44} color={colors.muted} />
             <Text style={styles.emptyTitle}>No leave requests yet</Text>
             <Text style={styles.emptyBody}>Tap the button below to apply for leave.</Text>
           </View>
@@ -67,11 +68,18 @@ export default function LeavesScreen({ route }: any) {
           <View style={styles.card}>
             <View style={styles.cardTop}>
               <View style={styles.leaveTypeWrap}>
-                <Text style={styles.leaveTypeIcon}>
-                  {item.leave_type.startsWith('Sick') ? '🤒'
-                   : item.leave_type.startsWith('Annual') ? '🌴'
-                   : item.leave_type.startsWith('Emergency') ? '🚨' : '☀️'}
-                </Text>
+                <View style={styles.leaveTypeIconWrap}>
+                  <Ionicons
+                    name={
+                      item.leave_type.startsWith('Sick') ? 'medkit-outline'
+                      : item.leave_type.startsWith('Annual') ? 'sunny-outline'
+                      : item.leave_type.startsWith('Emergency') ? 'alert-circle-outline'
+                      : 'calendar-outline'
+                    }
+                    size={16}
+                    color={colors.brand}
+                  />
+                </View>
                 <Text style={styles.leaveType}>{item.leave_type}</Text>
               </View>
               <StatusChip status={item.status} />
@@ -82,7 +90,7 @@ export default function LeavesScreen({ route }: any) {
                 <Text style={styles.dateLabel}>FROM</Text>
                 <Text style={styles.dateValue}>{item.start_date}</Text>
               </View>
-              <View style={styles.dateArrow}><Text style={styles.dateArrowText}>→</Text></View>
+              <View style={styles.dateArrow}><Ionicons name="arrow-forward" size={14} color={colors.muted} /></View>
               <View style={styles.dateItem}>
                 <Text style={styles.dateLabel}>TO</Text>
                 <Text style={styles.dateValue}>{item.end_date}</Text>
@@ -214,7 +222,7 @@ const modal = StyleSheet.create({
   sheet: {
     backgroundColor: colors.card,
     borderTopLeftRadius: radius.xxl, borderTopRightRadius: radius.xxl,
-    padding: spacing.xl, maxHeight: '88%', ...shadows.lg,
+    padding: spacing.xl, maxHeight: '88%',
   },
   handle: {
     width: 36, height: 4, borderRadius: 2,
@@ -254,7 +262,7 @@ const modal = StyleSheet.create({
   cancelText: { color: colors.ink2, fontWeight: '700' },
   submitBtn: {
     flex: 1, paddingVertical: 14, borderRadius: radius.md,
-    alignItems: 'center', backgroundColor: colors.brand, ...shadows.sm,
+    alignItems: 'center', backgroundColor: colors.brand,
   },
   submitBtnDisabled: { opacity: 0.7 },
   submitText: { color: '#fff', fontWeight: '700' },
@@ -265,21 +273,20 @@ const styles = StyleSheet.create({
   list: { padding: spacing.lg, paddingBottom: 100 },
 
   empty: { paddingTop: 80, alignItems: 'center', gap: spacing.sm },
-  emptyIcon: { fontSize: 44 },
   emptyTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink },
   emptyBody: { fontSize: typography.base, color: colors.muted, textAlign: 'center' },
 
   card: {
     backgroundColor: colors.card, borderRadius: radius.xl,
     padding: spacing.lg, marginBottom: spacing.md,
-    borderWidth: 1, borderColor: colors.border, ...shadows.sm,
+    borderWidth: 1, borderColor: colors.border,
   },
   cardTop: {
     flexDirection: 'row', justifyContent: 'space-between',
     alignItems: 'center', marginBottom: spacing.md,
   },
   leaveTypeWrap: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  leaveTypeIcon: { fontSize: 18 },
+  leaveTypeIconWrap: { width: 26, height: 26, borderRadius: radius.sm, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
   leaveType: { fontSize: typography.md, fontWeight: '700', color: colors.ink },
 
   dateRow: {
@@ -291,7 +298,6 @@ const styles = StyleSheet.create({
   dateLabel: { fontSize: typography.xs, fontWeight: '700', color: colors.muted, letterSpacing: 0.4 },
   dateValue: { fontSize: typography.sm, fontWeight: '700', color: colors.ink },
   dateArrow: { paddingHorizontal: spacing.xs },
-  dateArrowText: { fontSize: typography.md, color: colors.muted },
   daysBadge: {
     backgroundColor: colors.brandSoft, borderRadius: radius.md,
     paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, alignItems: 'center',
@@ -311,7 +317,7 @@ const styles = StyleSheet.create({
   },
   fab: {
     backgroundColor: colors.brand, borderRadius: radius.lg,
-    paddingVertical: 15, alignItems: 'center', ...shadows.lg,
+    paddingVertical: 15, alignItems: 'center',
   },
   fabText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
 });

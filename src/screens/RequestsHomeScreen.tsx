@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { ComponentProps, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import api from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 export default function RequestsHomeScreen({ navigation }: any) {
   const [loading, setLoading]         = useState(true);
@@ -34,10 +35,10 @@ export default function RequestsHomeScreen({ navigation }: any) {
     })();
   }, []);
 
-  const CARDS = [
-    { title: 'Leave Requests',      count: leaveCount,   pending: pendingLeaves, icon: '📋', hint: 'Review and approve or reject employee leave applications.', screen: 'LeaveRequests' },
-    { title: 'Holiday Management',  count: holidayCount, pending: 0,             icon: '🗓️', hint: 'Create, edit, and remove company holidays.',                 screen: 'HolidayManagement' },
-    { title: 'Correction Requests', count: corrCount,    pending: pendingCorr,   icon: '🔧', hint: 'Approve or reject employee attendance correction requests.', screen: 'CorrectionRequests' },
+  const CARDS: { title: string; count: number; pending: number; icon: ComponentProps<typeof Ionicons>['name']; hint: string; screen: string }[] = [
+    { title: 'Leave Requests',      count: leaveCount,   pending: pendingLeaves, icon: 'document-text-outline', hint: 'Review and approve or reject employee leave applications.', screen: 'LeaveRequests' },
+    { title: 'Holiday Management',  count: holidayCount, pending: 0,             icon: 'calendar-outline',      hint: 'Create, edit, and remove company holidays.',                 screen: 'HolidayManagement' },
+    { title: 'Correction Requests', count: corrCount,    pending: pendingCorr,   icon: 'construct-outline',     hint: 'Approve or reject employee attendance correction requests.', screen: 'CorrectionRequests' },
   ];
 
   return (
@@ -54,7 +55,7 @@ export default function RequestsHomeScreen({ navigation }: any) {
           <TouchableOpacity key={card.screen} style={s.card} onPress={() => navigation.navigate(card.screen)} activeOpacity={0.75}>
             <View style={s.cardLeft}>
               <View style={[s.iconWrap, card.pending > 0 && s.iconWrapAlert]}>
-                <Text style={s.icon}>{card.icon}</Text>
+                <Ionicons name={card.icon} size={22} color={card.pending > 0 ? colors.warn : colors.brand} />
               </View>
               <View style={s.cardText}>
                 <View style={s.cardTitleRow}>
@@ -87,11 +88,10 @@ const s = StyleSheet.create({
   errorBanner: { backgroundColor: colors.dangerSoft, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.md, borderLeftWidth: 3, borderLeftColor: colors.danger },
   errorText: { color: colors.danger, fontSize: typography.sm },
   loadingWrap: { paddingTop: 60, alignItems: 'center' },
-  card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border, flexDirection: 'row', alignItems: 'center', ...shadows.sm },
+  card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border, flexDirection: 'row', alignItems: 'center' },
   cardLeft: { flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
   iconWrap: { width: 44, height: 44, borderRadius: radius.lg, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
   iconWrapAlert: { backgroundColor: colors.warnSoft },
-  icon: { fontSize: 22 },
   cardText: { flex: 1 },
   cardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.xs, flexWrap: 'wrap' },
   cardTitle: { fontSize: typography.lg, fontWeight: '700', color: colors.ink },

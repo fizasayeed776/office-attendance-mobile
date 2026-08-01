@@ -40,17 +40,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [mustChangePassword, setMustChangePassword] = useState(false);
 
   const restoreSession = useCallback(async () => {
-    console.log('🔐 AuthContext.restoreSession START', { timestamp: new Date().toISOString() });
+    console.log('[AUTH] AuthContext.restoreSession START', { timestamp: new Date().toISOString() });
     const token = await tokenStorage.get();
     if (!token) {
-      console.log('🔐 AuthContext.restoreSession: No token found, user not logged in');
+      console.log('[AUTH] AuthContext.restoreSession: No token found, user not logged in');
       setLoading(false);
       return;
     }
     try {
-      console.log('🔐 AuthContext.restoreSession: Token found, fetching session');
+      console.log('[AUTH] AuthContext.restoreSession: Token found, fetching session');
       const { data } = await api.get('/api/session/');
-      console.log('🔐 AuthContext.restoreSession response', { role: data.role, pk: data.pk });
+      console.log('[AUTH] AuthContext.restoreSession response', { role: data.role, pk: data.pk });
       if (data.role === 'admin') {
         setAdminUser({
           pk: data.pk,
@@ -75,19 +75,19 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setAdminUser(null);
         setMustChangePassword(false);
       } else {
-        console.log('🔐 AuthContext.restoreSession: unauthenticated or unexpected session response', data);
+        console.log('[AUTH] AuthContext.restoreSession: unauthenticated or unexpected session response', data);
         await tokenStorage.clear();
         setEmployee(null);
         setAdminUser(null);
         setMustChangePassword(false);
       }
     } catch (err) {
-      console.error('🔐 AuthContext.restoreSession failed', err);
+      console.error('[AUTH] AuthContext.restoreSession failed', err);
       await tokenStorage.clear();
       setEmployee(null);
       setAdminUser(null);
     } finally {
-      console.log('🔐 AuthContext.restoreSession COMPLETE, setting loading=false');
+      console.log('[AUTH] AuthContext.restoreSession COMPLETE, setting loading=false');
       setLoading(false);
     }
   }, []);
@@ -97,9 +97,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [restoreSession]);
 
   const login = useCallback(async (username: string, password: string) => {
-    console.log('🔐 AuthContext.login START', { username, timestamp: new Date().toISOString() });
+    console.log('[AUTH] AuthContext.login START', { username, timestamp: new Date().toISOString() });
     try {
-      console.log('🔐 AuthContext.login: Making API request to /api/mobile/login/');
+      console.log('[AUTH] AuthContext.login: Making API request to /api/mobile/login/');
       const response = await api.post('/api/mobile/login/', {
         username,
         password,
@@ -108,7 +108,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // Extract data from response
       const data = response?.data;
-      console.log('🔐 AuthContext.login RESPONSE RECEIVED', { 
+      console.log('[AUTH] AuthContext.login RESPONSE RECEIVED', { 
         hasData: !!data, 
         status: response?.status,
         dataKeys: data ? Object.keys(data) : [],
@@ -117,12 +117,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       
       // Validate response structure
       if (!data) {
-        console.error('🔐 AuthContext.login VALIDATION ERROR: Response data is empty or null');
+        console.error('[AUTH] AuthContext.login VALIDATION ERROR: Response data is empty or null');
         throw new Error('Server returned an empty response. Please try again.');
       }
 
       if (!data.token) {
-        console.error('🔐 AuthContext.login VALIDATION ERROR: Response missing token field', { dataKeys: Object.keys(data) });
+        console.error('[AUTH] AuthContext.login VALIDATION ERROR: Response missing token field', { dataKeys: Object.keys(data) });
         throw new Error('Server response is missing authentication token. Please try again or contact support.');
       }
 
@@ -132,12 +132,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       // Handle admin login
       if (data.role === 'admin') {
-        console.log('🔐 AuthContext.login: ADMIN login detected', { pk: data.pk, username: data.username });
+        console.log('[AUTH] AuthContext.login: ADMIN login detected', { pk: data.pk, username: data.username });
         if (!data.pk || !data.username) {
-          console.error('🔐 AuthContext.login ADMIN ERROR missing fields', { pk: data.pk, username: data.username });
+          console.error('[AUTH] AuthContext.login ADMIN ERROR missing fields', { pk: data.pk, username: data.username });
           throw new Error('Server returned incomplete admin information. Please try again.');
         }
-        console.log('🔐 AuthContext.login: CALLING setAdminUser()');
+        console.log('[AUTH] AuthContext.login: CALLING setAdminUser()');
         setAdminUser({
           pk: data.pk,
           username: data.username,
@@ -145,31 +145,31 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           staff_role: data.staff_role,
           staff_department: data.staff_department,
         });
-        console.log('🔐 AuthContext.login: CALLED setAdminUser');
+        console.log('[AUTH] AuthContext.login: CALLED setAdminUser');
         setEmployee(null);
         setMustChangePassword(data.must_change_password === true);
-        console.log('🔐 AuthContext.login: ADMIN STATE UPDATES COMPLETE');
+        console.log('[AUTH] AuthContext.login: ADMIN STATE UPDATES COMPLETE');
       } 
       // Handle employee login
       else if (data.employee) {
-        console.log('🔐 AuthContext.login: EMPLOYEE login detected', { pk: data.employee.pk, username: data.employee.username });
+        console.log('[AUTH] AuthContext.login: EMPLOYEE login detected', { pk: data.employee.pk, username: data.employee.username });
         if (!data.employee.pk || !data.employee.username) {
-          console.error('🔐 AuthContext.login EMPLOYEE ERROR missing fields', { 
+          console.error('[AUTH] AuthContext.login EMPLOYEE ERROR missing fields', { 
             employeePk: data.employee.pk, 
             employeeUsername: data.employee.username 
           });
           throw new Error('Server returned incomplete employee information. Please try again.');
         }
-        console.log('🔐 AuthContext.login: CALLING setEmployee()');
+        console.log('[AUTH] AuthContext.login: CALLING setEmployee()');
         setEmployee(data.employee);
-        console.log('🔐 AuthContext.login: CALLED setEmployee');
+        console.log('[AUTH] AuthContext.login: CALLED setEmployee');
         setAdminUser(null);
         setMustChangePassword(false);
-        console.log('🔐 AuthContext.login: EMPLOYEE STATE UPDATES COMPLETE');
+        console.log('[AUTH] AuthContext.login: EMPLOYEE STATE UPDATES COMPLETE');
       } 
       // Unknown response format
       else {
-        console.error('🔐 AuthContext.login ERROR: Unexpected response format', { 
+        console.error('[AUTH] AuthContext.login ERROR: Unexpected response format', { 
           hasRole: !!data.role, 
           hasEmployee: !!data.employee,
           dataKeys: Object.keys(data || {})
@@ -177,9 +177,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         throw new Error('Unexpected server response format. Please try again or contact support.');
       }
       
-      console.log('🔐 AuthContext.login SUCCESS', { timestamp: new Date().toISOString() });
+      console.log('[AUTH] AuthContext.login SUCCESS', { timestamp: new Date().toISOString() });
     } catch (err: any) {
-      console.error('🔐 AuthContext.login CAUGHT ERROR', {
+      console.error('[AUTH] AuthContext.login CAUGHT ERROR', {
         errorMessage: err?.message,
         errorCode: err?.code,
         errorResponse: err?.response?.status,
@@ -190,9 +190,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       // Ensure token is cleared on any error
       try {
         await tokenStorage.clear();
-        console.log('🔐 AuthContext.login: Token cleared after error');
+        console.log('[AUTH] AuthContext.login: Token cleared after error');
       } catch (clearErr) {
-        console.error('🔐 AuthContext.login: Failed to clear token after error', clearErr);
+        console.error('[AUTH] AuthContext.login: Failed to clear token after error', clearErr);
       }
       
       // Re-throw with user-friendly message

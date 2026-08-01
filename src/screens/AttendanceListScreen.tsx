@@ -3,8 +3,10 @@ import {
   View, Text, FlatList, StyleSheet, TextInput,
   TouchableOpacity, ActivityIndicator,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import apiClient from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 function initials(name: string) {
   return name.split(' ').filter(Boolean).slice(0, 2)
@@ -61,7 +63,7 @@ export default function AttendanceListScreen({ route }: any) {
       {/* ── Filter bar ── */}
       <View style={styles.filterBar}>
         <View style={styles.searchWrap}>
-          <Text style={styles.searchIcon}>🔍</Text>
+          <Ionicons name="search-outline" size={14} color={colors.muted} />
           <TextInput
             style={styles.searchInput}
             placeholder="Search by name or ID"
@@ -86,7 +88,7 @@ export default function AttendanceListScreen({ route }: any) {
         <TouchableOpacity style={styles.refreshBtn} onPress={load} disabled={loading}>
           {loading
             ? <ActivityIndicator size="small" color="#fff" />
-            : <Text style={styles.refreshBtnText}>↻</Text>}
+            : <Ionicons name="refresh-outline" size={20} color="#fff" />}
         </TouchableOpacity>
       </View>
 
@@ -106,7 +108,7 @@ export default function AttendanceListScreen({ route }: any) {
         contentContainerStyle={attendance.length === 0 ? styles.emptyWrap : styles.list}
         ListEmptyComponent={
           <View style={styles.emptyCenter}>
-            <Text style={styles.emptyIcon}>🗓️</Text>
+            <Ionicons name="calendar-outline" size={36} color={colors.muted} />
             <Text style={styles.emptyTitle}>
               {loading ? 'Loading attendance…' : 'No records found'}
             </Text>
@@ -164,7 +166,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     gap: spacing.xs,
   },
-  searchIcon: { fontSize: 13 },
+  searchIcon: { width: 14 },
   searchInput: {
     flex: 1, paddingVertical: 10,
     fontSize: typography.sm, color: colors.ink,
@@ -189,7 +191,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  refreshBtnText: { fontSize: 18, color: '#fff', fontWeight: '700' },
 
   // ── Table
   tableHeader: {

@@ -9,46 +9,46 @@ const API_BASE_URL: string =
 
 const TOKEN_KEY = 'attendance_auth_token';
 
-console.log('🌐 ===== API CLIENT INITIALIZATION =====');
-console.log('🌐 Constants.expoConfig:', JSON.stringify(Constants.expoConfig, null, 2));
-console.log('🌐 Constants.expoConfig?.extra:', JSON.stringify(Constants.expoConfig?.extra, null, 2));
-console.log('🌐 API_BASE_URL configured as:', API_BASE_URL);
-console.log('🌐 Using hostname:', new URL(API_BASE_URL).hostname);
-console.log('🌐 Using protocol:', new URL(API_BASE_URL).protocol);
-console.log('🌐 Is HTTPS:', new URL(API_BASE_URL).protocol === 'https:');
-console.log('🌐 ===== END INITIALIZATION =====');
+console.log('[API] ===== API CLIENT INITIALIZATION =====');
+console.log('[API] Constants.expoConfig:', JSON.stringify(Constants.expoConfig, null, 2));
+console.log('[API] Constants.expoConfig?.extra:', JSON.stringify(Constants.expoConfig?.extra, null, 2));
+console.log('[API] API_BASE_URL configured as:', API_BASE_URL);
+console.log('[API] Using hostname:', new URL(API_BASE_URL).hostname);
+console.log('[API] Using protocol:', new URL(API_BASE_URL).protocol);
+console.log('[API] Is HTTPS:', new URL(API_BASE_URL).protocol === 'https:');
+console.log('[API] ===== END INITIALIZATION =====');
 
 export const tokenStorage = {
   async get(): Promise<string | null> {
     try {
       const token = await SecureStore.getItemAsync(TOKEN_KEY);
       if (token) {
-        console.log('🔑 tokenStorage.get: Token retrieved (length=' + token.length + ')');
+        console.log('[TOKEN] tokenStorage.get: Token retrieved (length=' + token.length + ')');
       } else {
-        console.log('🔑 tokenStorage.get: No token found');
+        console.log('[TOKEN] tokenStorage.get: No token found');
       }
       return token;
     } catch (err) {
-      console.error('🔑 tokenStorage.get ERROR:', err);
+      console.error('[TOKEN] tokenStorage.get ERROR:', err);
       return null;
     }
   },
   async set(token: string): Promise<void> {
     try {
-      console.log('🔑 tokenStorage.set: Storing token (length=' + token.length + ')');
+      console.log('[TOKEN] tokenStorage.set: Storing token (length=' + token.length + ')');
       await SecureStore.setItemAsync(TOKEN_KEY, token);
-      console.log('🔑 tokenStorage.set: Token stored successfully');
+      console.log('[TOKEN] tokenStorage.set: Token stored successfully');
     } catch (err) {
-      console.error('🔑 tokenStorage.set ERROR:', err);
+      console.error('[TOKEN] tokenStorage.set ERROR:', err);
       throw new Error('Failed to save authentication token. Please try again.');
     }
   },
   async clear(): Promise<void> {
     try {
       await SecureStore.deleteItemAsync(TOKEN_KEY);
-      console.log('🔑 tokenStorage.clear: Token cleared');
+      console.log('[TOKEN] tokenStorage.clear: Token cleared');
     } catch (err) {
-      console.error('🔑 tokenStorage.clear ERROR:', err);
+      console.error('[TOKEN] tokenStorage.clear ERROR:', err);
     }
   },
 };
@@ -68,15 +68,15 @@ api.interceptors.request.use(
       if (token) {
         config.headers = (config.headers ?? {}) as AxiosRequestHeaders;
         config.headers.Authorization = `Token ${token}`;
-        console.log('🌐 Request interceptor: Authorization header added for', config.url);
+        console.log('[API] Request interceptor: Authorization header added for', config.url);
       }
     } catch (err) {
-      console.error('🌐 Request interceptor ERROR:', err);
+      console.error('[API] Request interceptor ERROR:', err);
     }
     return config;
   },
   (error) => {
-    console.error('🌐 Request interceptor error', error);
+    console.error('[API] Request interceptor error', error);
     return Promise.reject(error);
   }
 );
@@ -86,11 +86,11 @@ api.interceptors.request.use(
 // Also handles network errors, CORS errors, and other HTTP errors.
 api.interceptors.response.use(
   (response) => {
-    console.log(`🌐 Response interceptor SUCCESS: ${response.config.method?.toUpperCase()} ${response.config.url} -> ${response.status}`);
+    console.log(`[API] Response interceptor SUCCESS: ${response.config.method?.toUpperCase()} ${response.config.url} -> ${response.status}`);
     return response;
   },
   (error) => {
-    console.error('🌐 Response interceptor ERROR:', {
+    console.error('[API] Response interceptor ERROR:', {
       message: error?.message,
       code: error?.code,
       status: error?.response?.status,
@@ -104,7 +104,7 @@ api.interceptors.response.use(
 
     // Network error (no response from server)
     if (!error?.response) {
-      console.error('🌐 NETWORK ERROR (no response from server):', {
+      console.error('[API] NETWORK ERROR (no response from server):', {
         code: error?.code,
         message: error?.message,
         apiBaseUrl: API_BASE_URL,
@@ -115,24 +115,24 @@ api.interceptors.response.use(
       
       if (error?.code === 'ECONNABORTED') {
         const message = 'Request timed out. Please check your internet connection and the server address in your settings.';
-        console.error('🌐 TIMEOUT ERROR:', { apiBaseUrl: API_BASE_URL });
+        console.error('[API] TIMEOUT ERROR:', { apiBaseUrl: API_BASE_URL });
         return Promise.reject(new Error(message));
       }
       
       if (error?.code === 'ERR_NETWORK' || error?.message?.includes('Network')) {
         const message = `Network error: Unable to reach ${API_BASE_URL}. Please check your internet connection and ensure the server is accessible.`;
-        console.error('🌐 NETWORK ERROR:', { apiBaseUrl: API_BASE_URL, errorCode: error?.code });
+        console.error('[API] NETWORK ERROR:', { apiBaseUrl: API_BASE_URL, errorCode: error?.code });
         return Promise.reject(new Error(message));
       }
 
       if (error?.message?.includes('CORS')) {
         const message = 'CORS error: The server rejected the request. Please ensure the server configuration is correct.';
-        console.error('🌐 CORS ERROR');
+        console.error('[API] CORS ERROR');
         return Promise.reject(new Error(message));
       }
 
       const message = `Connection error: ${error?.message || 'Unable to reach the server'}. Please check your internet connection and try again.`;
-      console.error('🌐 UNKNOWN NETWORK ERROR:', { message, apiBaseUrl: API_BASE_URL });
+      console.error('[API] UNKNOWN NETWORK ERROR:', { message, apiBaseUrl: API_BASE_URL });
       return Promise.reject(new Error(message));
     }
 
@@ -146,27 +146,27 @@ api.interceptors.response.use(
     // Handle specific HTTP status codes
     if (status === 400) {
       message = message || 'Invalid request. Please check your input and try again.';
-      console.error('🌐 BAD REQUEST (400):', { message, data });
+      console.error('[API] BAD REQUEST (400):', { message, data });
     } else if (status === 401) {
       message = message || 'Invalid username or password.';
-      console.error('🌐 UNAUTHORIZED (401):', { message });
+      console.error('[API] UNAUTHORIZED (401):', { message });
     } else if (status === 403) {
       message = message || 'Access denied. You do not have permission to perform this action.';
-      console.error('🌐 FORBIDDEN (403):', { message });
+      console.error('[API] FORBIDDEN (403):', { message });
     } else if (status === 404) {
       message = message || 'Server endpoint not found. Please check the server configuration.';
-      console.error('🌐 NOT FOUND (404):', { url: error?.config?.url });
+      console.error('[API] NOT FOUND (404):', { url: error?.config?.url });
     } else if (status === 500) {
       message = 'Server error. Please try again later or contact support.';
-      console.error('🌐 SERVER ERROR (500):', { message, data });
+      console.error('[API] SERVER ERROR (500):', { message, data });
     } else if (status === 503) {
       message = 'Server is temporarily unavailable. Please try again later.';
-      console.error('🌐 SERVICE UNAVAILABLE (503)');
+      console.error('[API] SERVICE UNAVAILABLE (503)');
     } else {
-      console.error(`🌐 HTTP ERROR ${status}:`, { message, data });
+      console.error(`[API] HTTP ERROR ${status}:`, { message, data });
     }
 
-    console.error('🌐 FINAL ERROR MESSAGE:', message);
+    console.error('[API] FINAL ERROR MESSAGE:', message);
     return Promise.reject(new Error(message));
   }
 );

@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import UserProfileSummary from '../components/UserProfileSummary';
 import NotificationToggle from '../components/NotificationToggle';
 import api from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 export default function EmployeeSettingsScreen() {
   const { logout } = useAuth();
@@ -109,7 +109,7 @@ const s = StyleSheet.create({
   card: {
     backgroundColor: colors.card, borderRadius: radius.xl,
     padding: spacing.lg, borderWidth: 1, borderColor: colors.border,
-    marginBottom: spacing.md, ...shadows.sm,
+    marginBottom: spacing.md,
   },
   cardTitle: { fontSize: typography.lg, fontWeight: '700', color: colors.ink, marginBottom: spacing.md },
 
@@ -132,7 +132,7 @@ const s = StyleSheet.create({
   },
   saveBtn: {
     backgroundColor: colors.brand, borderRadius: radius.md,
-    paddingVertical: 14, alignItems: 'center', marginTop: spacing.lg, ...shadows.sm,
+    paddingVertical: 14, alignItems: 'center', marginTop: spacing.lg,
   },
   saveBtnDisabled: { opacity: 0.7 },
   saveBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md },

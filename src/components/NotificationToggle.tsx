@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch, ActivityIndicator, Alert } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { registerForPushNotifications } from '../notifications';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 export default function NotificationToggle() {
   const [enabled, setEnabled] = useState(false);
@@ -28,7 +29,7 @@ export default function NotificationToggle() {
     <View style={s.card}>
       <View style={s.row}>
         <View style={s.iconWrap}>
-          <Text style={s.icon}>🔔</Text>
+          <Ionicons name="notifications-outline" size={20} color={colors.brand} />
         </View>
         <View style={s.meta}>
           <Text style={s.title}>Push notifications</Text>
@@ -59,7 +60,6 @@ const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     marginBottom: spacing.md,
-    ...shadows.sm,
   },
   row: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   iconWrap: {
@@ -67,7 +67,6 @@ const s = StyleSheet.create({
     backgroundColor: colors.brandSoft,
     alignItems: 'center', justifyContent: 'center',
   },
-  icon: { fontSize: 20 },
   meta: { flex: 1 },
   title: { fontSize: typography.md, fontWeight: '700', color: colors.ink },
   hint: { fontSize: typography.sm, color: colors.muted, marginTop: spacing.xxs, lineHeight: 18 },

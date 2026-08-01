@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { ComponentProps, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import api from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 export default function OrganizationHomeScreen({ navigation }: any) {
   const [loading, setLoading] = useState(true);
@@ -24,9 +25,9 @@ export default function OrganizationHomeScreen({ navigation }: any) {
     })();
   }, []);
 
-  const CARDS = [
-    { title: 'Departments', count: deptCount, noun: 'department', icon: '🏢', hint: 'Create, edit, and delete department records that employees can be assigned to.', screen: 'Departments' },
-    { title: 'Shifts',      count: shiftCount, noun: 'shift',      icon: '🕐', hint: 'Create and manage employee shifts with start/end times and grace periods.', screen: 'Shifts' },
+  const CARDS: { title: string; count: number; noun: string; icon: ComponentProps<typeof Ionicons>['name']; hint: string; screen: string }[] = [
+    { title: 'Departments', count: deptCount,  noun: 'department', icon: 'business-outline',  hint: 'Create, edit, and delete department records that employees can be assigned to.', screen: 'Departments' },
+    { title: 'Shifts',      count: shiftCount, noun: 'shift',      icon: 'time-outline',       hint: 'Create and manage employee shifts with start/end times and grace periods.',      screen: 'Shifts' },
   ];
 
   return (
@@ -42,7 +43,7 @@ export default function OrganizationHomeScreen({ navigation }: any) {
         CARDS.map((card) => (
           <TouchableOpacity key={card.screen} style={s.card} onPress={() => navigation.navigate(card.screen)} activeOpacity={0.75}>
             <View style={s.cardLeft}>
-              <View style={s.iconWrap}><Text style={s.icon}>{card.icon}</Text></View>
+              <View style={s.iconWrap}><Ionicons name={card.icon} size={22} color={colors.brand} /></View>
               <View style={s.cardText}>
                 <Text style={s.cardTitle}>{card.title}</Text>
                 <Text style={s.cardHint}>{card.hint}</Text>
@@ -68,10 +69,9 @@ const s = StyleSheet.create({
   errorBanner: { backgroundColor: colors.dangerSoft, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.md, borderLeftWidth: 3, borderLeftColor: colors.danger },
   errorText: { color: colors.danger, fontSize: typography.sm },
   loadingWrap: { paddingTop: 60, alignItems: 'center' },
-  card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border, flexDirection: 'row', alignItems: 'center', ...shadows.sm },
+  card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border, flexDirection: 'row', alignItems: 'center' },
   cardLeft: { flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
   iconWrap: { width: 44, height: 44, borderRadius: radius.lg, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
-  icon: { fontSize: 22 },
   cardText: { flex: 1 },
   cardTitle: { fontSize: typography.lg, fontWeight: '700', color: colors.ink, marginBottom: spacing.xs },
   cardHint: { fontSize: typography.sm, color: colors.muted, lineHeight: 19 },

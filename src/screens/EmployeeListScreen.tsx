@@ -4,8 +4,9 @@ import {
   RefreshControl, TouchableOpacity, Modal, Alert, TextInput,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -146,7 +147,6 @@ const modalStyles = StyleSheet.create({
     borderTopRightRadius: radius.xxl,
     padding: spacing.xl,
     maxHeight: '90%',
-    ...shadows.lg,
   },
   handle: {
     width: 36, height: 4, borderRadius: 2,
@@ -178,7 +178,6 @@ const modalStyles = StyleSheet.create({
   saveBtn: {
     flex: 1, paddingVertical: 14, borderRadius: radius.md,
     alignItems: 'center', backgroundColor: colors.brand,
-    ...shadows.sm,
   },
   saveBtnDisabled: { opacity: 0.7 },
   saveText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
@@ -353,7 +352,7 @@ export default function EmployeeListScreen({ navigation }: any) {
           </View>
         ) : employees.length === 0 ? (
           <View style={styles.empty}>
-            <Text style={styles.emptyIcon}>👥</Text>
+            <Ionicons name="people-outline" size={48} color={colors.muted} />
             <Text style={styles.emptyTitle}>No employees yet</Text>
             <Text style={styles.emptyBody}>Tap "Add Employee" to create the first record.</Text>
           </View>
@@ -387,12 +386,12 @@ export default function EmployeeListScreen({ navigation }: any) {
               <View style={styles.chipRow}>
                 <View style={[styles.chip, emp.face_trained ? styles.chipSuccess : styles.chipMuted]}>
                   <Text style={[styles.chipText, emp.face_trained ? styles.chipTextSuccess : styles.chipTextMuted]}>
-                    {emp.face_trained ? '✓ Face registered' : '○ No face data'}
+                    {emp.face_trained ? 'Face registered' : 'No face data'}
                   </Text>
                 </View>
                 <View style={[styles.chip, emp.account_setup ? styles.chipSuccess : styles.chipMuted]}>
                   <Text style={[styles.chipText, emp.account_setup ? styles.chipTextSuccess : styles.chipTextMuted]}>
-                    {emp.account_setup ? '✓ Account active' : '○ Pending setup'}
+                    {emp.account_setup ? 'Account active' : 'Pending setup'}
                   </Text>
                 </View>
               </View>
@@ -466,7 +465,7 @@ export default function EmployeeListScreen({ navigation }: any) {
                 <Text style={[styles.pickerItemText, assignDept === opt.value && styles.pickerItemTextActive]}>
                   {opt.label}
                 </Text>
-                {assignDept === opt.value && <Text style={styles.pickerCheck}>✓</Text>}
+                {assignDept === opt.value && <Ionicons name="checkmark" size={14} color={colors.brand} />}
               </TouchableOpacity>
             ))}
           </View>
@@ -482,7 +481,7 @@ export default function EmployeeListScreen({ navigation }: any) {
                 <Text style={[styles.pickerItemText, assignShiftPk === opt.pk && styles.pickerItemTextActive]}>
                   {opt.label}
                 </Text>
-                {assignShiftPk === opt.pk && <Text style={styles.pickerCheck}>✓</Text>}
+                {assignShiftPk === opt.pk && <Ionicons name="checkmark" size={14} color={colors.brand} />}
               </TouchableOpacity>
             ))}
           </View>
@@ -511,7 +510,6 @@ const styles = StyleSheet.create({
     borderRadius: radius.md,
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
-    ...shadows.sm,
   },
   addBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.sm },
 
@@ -528,7 +526,6 @@ const styles = StyleSheet.create({
   loadingWrap: { paddingVertical: 80, alignItems: 'center' },
 
   empty: { paddingVertical: 80, alignItems: 'center', gap: spacing.sm },
-  emptyIcon: { fontSize: 48 },
   emptyTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink },
   emptyBody: { fontSize: typography.base, color: colors.muted, textAlign: 'center', paddingHorizontal: spacing.xl },
 
@@ -540,7 +537,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden',
-    ...shadows.sm,
   },
   cardHeader: {
     flexDirection: 'row',
@@ -621,5 +617,4 @@ const styles = StyleSheet.create({
   pickerItemActive: { backgroundColor: colors.brandSofter },
   pickerItemText: { fontSize: typography.base, color: colors.ink2 },
   pickerItemTextActive: { color: colors.brand, fontWeight: '700' },
-  pickerCheck: { color: colors.brand, fontWeight: '700' },
 });

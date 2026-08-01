@@ -7,7 +7,8 @@ import {
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 const SHOW_SERVER_FOOTER =
   __DEV__ || API_BASE_URL.includes('localhost') || API_BASE_URL.includes('127.0.0.1');
@@ -79,7 +80,7 @@ export default function LoginScreen({ navigation }: any) {
 
           {!!error && (
             <View style={styles.errorBanner}>
-              <Text style={styles.errorIcon}>⚠</Text>
+              <Ionicons name="warning-outline" size={16} color={colors.danger} style={{ marginTop: 1 }} />
               <Text style={styles.errorText}>{error}</Text>
             </View>
           )}
@@ -123,7 +124,11 @@ export default function LoginScreen({ navigation }: any) {
                 style={styles.inputAction}
                 onPress={() => setPasswordVisible((v) => !v)}
               >
-                <Text style={styles.inputActionText}>{passwordVisible ? '🙈' : '👁'}</Text>
+                <Ionicons
+                  name={passwordVisible ? 'eye-off-outline' : 'eye-outline'}
+                  size={18}
+                  color={colors.muted}
+                />
               </TouchableOpacity>
             </View>
           </View>
@@ -203,7 +208,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brand,
     alignItems: 'center', justifyContent: 'center',
     marginBottom: spacing.lg,
-    ...shadows.lg,
   },
   logoLetter: { color: '#fff', fontSize: typography.display, fontWeight: '800' },
   appName: { color: '#fff', fontSize: typography.xxxl, fontWeight: '800', letterSpacing: -0.5 },
@@ -214,7 +218,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     borderRadius: radius.xxl,
     padding: spacing.xl,
-    ...shadows.lg,
   },
   cardHeading: {
     fontSize: typography.xl,
@@ -236,7 +239,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.lg,
     gap: spacing.sm,
   },
-  errorIcon: { fontSize: 14, color: colors.danger, marginTop: 1 },
   errorText: { flex: 1, color: colors.danger, fontSize: typography.base, lineHeight: 20 },
 
   // ── Fields
@@ -265,7 +267,6 @@ const styles = StyleSheet.create({
   },
   inputWithAction: { paddingRight: 0 },
   inputAction: { paddingHorizontal: spacing.md, paddingVertical: 13 },
-  inputActionText: { fontSize: 16 },
 
   // ── Button
   btn: {
@@ -274,7 +275,6 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: 'center',
     marginTop: spacing.sm,
-    ...shadows.md,
   },
   btnDisabled: { opacity: 0.7 },
   btnInner: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },

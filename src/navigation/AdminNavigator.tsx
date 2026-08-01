@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors, spacing, shadows } from '../theme/colors';
+import { colors } from '../theme/colors';
 import TabIcon from '../components/TabIcon';
 
 import AdminDashboardScreen from '../screens/AdminDashboardScreen';
@@ -29,7 +29,7 @@ const OrganizationStack = createNativeStackNavigator();
 const RequestsStack = createNativeStackNavigator();
 
 const SHARED_HEADER = {
-  headerStyle: { backgroundColor: colors.card, ...shadows.sm },
+  headerStyle: { backgroundColor: colors.card },
   headerTitleStyle: { color: colors.ink, fontWeight: '700' as const, fontSize: 17 },
   headerShadowVisible: false,
   headerTintColor: colors.brand,
@@ -134,8 +134,11 @@ function RequestsStackScreen() {
 
 function AdminTabs() {
   const insets = useSafeAreaInsets();
-  // 6 tabs: shrink label size and give a taller bar so nothing clips
-  const TAB_HEIGHT = 62 + insets.bottom;
+  // 6 tabs on a narrow screen (360 px) — every pixel matters.
+  // TAB_HEIGHT accounts for the system gesture bar via insets.bottom so the
+  // bar never overlaps system UI on gesture-nav phones.
+  // paddingTop is a flat 4 px — same reasoning as the employee bar.
+  const TAB_HEIGHT = 56 + insets.bottom;
 
   return (
     <Tab.Navigator
@@ -148,16 +151,26 @@ function AdminTabs() {
             borderTopWidth: 0,
             height: TAB_HEIGHT,
             paddingBottom: insets.bottom,
-            paddingTop: spacing.sm,
-            ...shadows.lg,
+            paddingTop: 4,
           },
           tabBarActiveTintColor: colors.tabBarActive,
           tabBarInactiveTintColor: colors.tabBarInactive,
-          // Smaller label for 6-tab layout — prevents truncation
           tabBarLabelStyle: {
             fontSize: 9,
             fontWeight: '600',
-            marginBottom: Platform.OS === 'android' ? 4 : 0,
+            // Zero out all extra margins so the label sits exactly where
+            // React Navigation's internal layout places it, with no extra
+            // push toward the edge of the bar.
+            marginBottom: 0,
+            marginTop: 0,
+          },
+          // Key fix for 6-tab clipping: React Navigation adds ~8 px horizontal
+          // padding per tab item by default — across 6 tabs that consumes 96 px
+          // (26 %) of a 360 px screen, forcing labels to truncate. Zeroing both
+          // axes gives each tab its full natural share of the bar width.
+          tabBarItemStyle: {
+            paddingHorizontal: 0,
+            paddingVertical: 0,
           },
           tabBarIcon: ({ focused, color }) => (
             <TabIcon name={tab?.icon ?? 'circle'} focused={focused} color={color} size={20} />

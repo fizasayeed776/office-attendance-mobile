@@ -5,7 +5,8 @@ import {
   StatusBar,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { Ionicons } from '@expo/vector-icons';
+import { colors, spacing, radius, typography } from '../theme/colors';
 import api from '../api/client';
 
 type Step = 'verify' | 'credentials';
@@ -112,7 +113,7 @@ export default function SetupAccountScreen({ navigation }: any) {
                       styles.stepDotText,
                       (active || done) && styles.stepDotTextActive,
                     ]}>
-                      {done ? '✓' : String(i + 1)}
+                      {done ? <Ionicons name="checkmark" size={14} color="#fff" /> : String(i + 1)}
                     </Text>
                   </View>
                   <Text style={[styles.stepLabel, active && styles.stepLabelActive]}>
@@ -186,7 +187,8 @@ export default function SetupAccountScreen({ navigation }: any) {
                 }
               </TouchableOpacity>
               <TouchableOpacity style={styles.backBtn} onPress={() => navigation.goBack()}>
-                <Text style={styles.backBtnText}>← Back to sign in</Text>
+                <Ionicons name="chevron-back" size={14} color={colors.brand} />
+                <Text style={styles.backBtnText}>Back to sign in</Text>
               </TouchableOpacity>
             </>
           ) : (
@@ -224,7 +226,11 @@ export default function SetupAccountScreen({ navigation }: any) {
                     style={styles.eyeBtn}
                     onPress={() => setPasswordVisible((v) => !v)}
                   >
-                    <Text>{passwordVisible ? '🙈' : '👁'}</Text>
+                    <Ionicons
+                      name={passwordVisible ? 'eye-off-outline' : 'eye-outline'}
+                      size={18}
+                      color={colors.muted}
+                    />
                   </TouchableOpacity>
                 </View>
               </Field>
@@ -253,7 +259,8 @@ export default function SetupAccountScreen({ navigation }: any) {
                 }
               </TouchableOpacity>
               <TouchableOpacity style={styles.backBtn} onPress={() => setStep('verify')}>
-                <Text style={styles.backBtnText}>← Back to verification</Text>
+                <Ionicons name="chevron-back" size={14} color={colors.brand} />
+                <Text style={styles.backBtnText}>Back to verification</Text>
               </TouchableOpacity>
             </>
           )}
@@ -323,7 +330,6 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     borderRadius: radius.xl,
     padding: spacing.xl,
-    ...shadows.md,
   },
   cardHeading: {
     fontSize: typography.xxl,
@@ -382,11 +388,10 @@ const styles = StyleSheet.create({
     paddingVertical: 15,
     alignItems: 'center',
     marginTop: spacing.sm,
-    ...shadows.md,
   },
   btnDisabled: { opacity: 0.7 },
   btnText: { color: '#fff', fontWeight: '700', fontSize: typography.md, letterSpacing: 0.3 },
 
-  backBtn: { marginTop: spacing.lg, alignItems: 'center' },
+  backBtn: { marginTop: spacing.lg, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2 },
   backBtnText: { color: colors.brand, fontWeight: '600', fontSize: typography.base },
 });

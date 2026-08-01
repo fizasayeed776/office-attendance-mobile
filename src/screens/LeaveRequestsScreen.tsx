@@ -4,8 +4,9 @@ import {
   RefreshControl, ActivityIndicator, Modal, TextInput, ScrollView,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 const LEAVE_TYPES = ['Casual Leave', 'Sick Leave', 'Annual Leave', 'Emergency Leave'];
 
@@ -132,7 +133,7 @@ export default function LeaveRequestsScreen() {
           }
           ListEmptyComponent={
             <View style={s.empty}>
-              <Text style={s.emptyIcon}>📋</Text>
+              <Ionicons name="document-text-outline" size={40} color={colors.muted} />
               <Text style={s.emptyTitle}>No leave requests</Text>
             </View>
           }
@@ -176,10 +177,12 @@ export default function LeaveRequestsScreen() {
               {item.status === 'pending' && (
                 <View style={s.actionRow}>
                   <TouchableOpacity style={s.approveBtn} onPress={() => approve(item.pk)} disabled={busy}>
-                    <Text style={s.approveBtnText}>✓ Approve</Text>
+                    <Ionicons name="checkmark" size={14} color={colors.success} />
+                    <Text style={s.approveBtnText}> Approve</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={s.rejectBtn} onPress={() => openReject(item)} disabled={busy}>
-                    <Text style={s.rejectBtnText}>✕ Reject</Text>
+                    <Ionicons name="close" size={14} color={colors.danger} />
+                    <Text style={s.rejectBtnText}> Reject</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -229,7 +232,7 @@ export default function LeaveRequestsScreen() {
                     <Text style={[m.pickerText, selEmpPk === emp.pk && m.pickerTextActive]}>
                       {emp.name} ({emp.employee_id})
                     </Text>
-                    {selEmpPk === emp.pk && <Text style={m.check}>✓</Text>}
+                    {selEmpPk === emp.pk && <Ionicons name="checkmark" size={16} color={colors.brand} />}
                   </TouchableOpacity>
                 ))}
               </View>
@@ -275,7 +278,7 @@ const m = StyleSheet.create({
   sheet: {
     backgroundColor: colors.card,
     borderTopLeftRadius: radius.xxl, borderTopRightRadius: radius.xxl,
-    padding: spacing.xl, maxHeight: '80%', ...shadows.lg,
+    padding: spacing.xl, maxHeight: '80%',
   },
   handle: {
     width: 36, height: 4, borderRadius: 2,
@@ -297,7 +300,6 @@ const m = StyleSheet.create({
   pickerItemActive: { backgroundColor: colors.brandSofter },
   pickerText: { fontSize: typography.base, color: colors.ink2 },
   pickerTextActive: { color: colors.brand, fontWeight: '700' },
-  check: { color: colors.brand, fontWeight: '700' },
   typeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
   typeChip: { paddingHorizontal: spacing.md, paddingVertical: spacing.sm, borderRadius: radius.pill, borderWidth: 1.5, borderColor: colors.border, backgroundColor: colors.bg },
   typeChipActive: { backgroundColor: colors.brand, borderColor: colors.brand },
@@ -306,7 +308,7 @@ const m = StyleSheet.create({
   actions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.lg },
   cancelBtn: { flex: 1, paddingVertical: 14, borderRadius: radius.md, alignItems: 'center', borderWidth: 1.5, borderColor: colors.border },
   cancelText: { color: colors.ink2, fontWeight: '700' },
-  submitBtn: { flex: 1, paddingVertical: 14, borderRadius: radius.md, alignItems: 'center', backgroundColor: colors.brand, ...shadows.sm },
+  submitBtn: { flex: 1, paddingVertical: 14, borderRadius: radius.md, alignItems: 'center', backgroundColor: colors.brand },
   submitDisabled: { opacity: 0.7 },
   submitText: { color: '#fff', fontWeight: '700' },
 });
@@ -317,15 +319,14 @@ const s = StyleSheet.create({
   loadingWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
   toolbar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: spacing.lg },
   heading: { fontSize: typography.xxl, fontWeight: '800', color: colors.ink },
-  addBtn: { backgroundColor: colors.brand, borderRadius: radius.md, paddingVertical: spacing.sm, paddingHorizontal: spacing.md, ...shadows.sm },
+  addBtn: { backgroundColor: colors.brand, borderRadius: radius.md, paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
   addBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.sm },
   errorBar: { color: colors.danger, padding: spacing.lg, fontSize: typography.base },
   empty: { paddingTop: 60, alignItems: 'center', gap: spacing.sm },
-  emptyIcon: { fontSize: 40 },
   emptyTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink },
   chip: { paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.pill },
   chipText: { fontSize: typography.xs, fontWeight: '700' },
-  card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border, ...shadows.sm },
+  card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.md },
   avatarWrap: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
   avatarText: { fontSize: 14, fontWeight: '700', color: colors.brand },
@@ -343,8 +344,8 @@ const s = StyleSheet.create({
   rejectionWrap: { backgroundColor: colors.dangerSoft, borderRadius: radius.md, padding: spacing.sm, marginTop: spacing.xs },
   rejectionText: { fontSize: typography.sm, color: colors.danger },
   actionRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md, borderTopWidth: 1, borderTopColor: colors.divider, paddingTop: spacing.md },
-  approveBtn: { flex: 1, paddingVertical: 11, borderRadius: radius.md, alignItems: 'center', backgroundColor: colors.successSoft, borderWidth: 1, borderColor: colors.success },
+  approveBtn: { flex: 1, flexDirection: 'row', paddingVertical: 11, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.successSoft, borderWidth: 1, borderColor: colors.success },
   approveBtnText: { color: colors.success, fontWeight: '700', fontSize: typography.sm },
-  rejectBtn: { flex: 1, paddingVertical: 11, borderRadius: radius.md, alignItems: 'center', backgroundColor: colors.dangerSoft, borderWidth: 1, borderColor: colors.danger },
+  rejectBtn: { flex: 1, flexDirection: 'row', paddingVertical: 11, borderRadius: radius.md, alignItems: 'center', justifyContent: 'center', backgroundColor: colors.dangerSoft, borderWidth: 1, borderColor: colors.danger },
   rejectBtnText: { color: colors.danger, fontWeight: '700', fontSize: typography.sm },
 });

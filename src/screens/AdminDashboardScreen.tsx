@@ -5,7 +5,9 @@ import {
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { colors, spacing, radius, typography } from '../theme/colors';
+
+import { Ionicons } from '@expo/vector-icons';
 
 type AttendanceRow = {
   employee_name: string;
@@ -33,10 +35,10 @@ const STAT_CONFIGS = [
 ];
 
 const QUICK_ACTIONS = [
-  { label: 'Add Employee',    icon: '👤',  tab: 'Employees', screen: 'AddEmployee'       },
-  { label: 'Employees List',  icon: '👥',  tab: 'Employees', screen: 'EmployeeList'      },
-  { label: 'Mark Attendance', icon: '📷',  tab: 'Attendance',screen: 'MarkAttendance'    },
-  { label: 'Attendance List', icon: '📋',  tab: 'Attendance',screen: 'AttendanceList'    },
+  { label: 'Add Employee',    ionicon: 'person-add-outline', tab: 'Employees', screen: 'AddEmployee'    },
+  { label: 'Employees List',  ionicon: 'people-outline',     tab: 'Employees', screen: 'EmployeeList'   },
+  { label: 'Mark Attendance', ionicon: 'camera-outline',     tab: 'Attendance',screen: 'MarkAttendance' },
+  { label: 'Attendance List', ionicon: 'list-outline',       tab: 'Attendance',screen: 'AttendanceList' },
 ];
 
 export default function AdminDashboardScreen({ navigation }: any) {
@@ -162,7 +164,7 @@ export default function AdminDashboardScreen({ navigation }: any) {
             onPress={() => navigate(action.tab, action.screen)}
             activeOpacity={0.75}
           >
-            <Text style={styles.actionIcon}>{action.icon}</Text>
+            <Ionicons name={action.ionicon as any} size={24} color={colors.brand} />
             <Text style={styles.actionLabel}>{action.label}</Text>
           </TouchableOpacity>
         ))}
@@ -171,7 +173,7 @@ export default function AdminDashboardScreen({ navigation }: any) {
       {/* ── Recent attendance table ── */}
       <View style={styles.section}>
         <View style={styles.sectionHeader}>
-          <Text style={styles.sectionTitle}>Recent Attendance</Text>
+          <Text style={styles.sectionTitleInline}>Recent Attendance</Text>
           <TouchableOpacity onPress={() => navigate('Attendance', 'AttendanceList')}>
             <Text style={styles.viewAll}>View all →</Text>
           </TouchableOpacity>
@@ -296,7 +298,6 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     borderWidth: 1,
     borderColor: colors.border,
-    ...shadows.sm,
   },
   statLabel: {
     fontSize: typography.xs,
@@ -306,10 +307,10 @@ const styles = StyleSheet.create({
     marginBottom: spacing.sm,
   },
   statValue: {
-    fontSize: 36,
+    fontSize: 38,
     fontWeight: '800',
     color: colors.ink,
-    lineHeight: 42,
+    lineHeight: 44,
     marginBottom: spacing.sm,
   },
   statBadge: {
@@ -336,9 +337,7 @@ const styles = StyleSheet.create({
     borderColor: colors.border,
     alignItems: 'flex-start',
     gap: spacing.sm,
-    ...shadows.sm,
   },
-  actionIcon: { fontSize: 24 },
   actionLabel: { fontSize: typography.md, fontWeight: '700', color: colors.ink },
 
   // ── Section
@@ -348,7 +347,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     overflow: 'hidden',
-    ...shadows.sm,
   },
   sectionHeader: {
     flexDirection: 'row',
@@ -359,11 +357,19 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderBottomColor: colors.border,
   },
+  // sectionTitle used standalone (with bottom margin) — e.g. "Quick Actions"
   sectionTitle: {
     fontSize: typography.lg,
     fontWeight: '700',
     color: colors.ink,
     marginBottom: spacing.md,
+  },
+  // sectionTitleInline — same type style but no margin; used inside
+  // sectionHeader which already supplies its own vertical padding.
+  sectionTitleInline: {
+    fontSize: typography.lg,
+    fontWeight: '700',
+    color: colors.ink,
   },
   viewAll: { fontSize: typography.sm, color: colors.brand, fontWeight: '600' },
 

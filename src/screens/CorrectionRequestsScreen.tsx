@@ -4,8 +4,10 @@ import {
   RefreshControl, ActivityIndicator, Modal, TextInput,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 type CorrectionRequest = {
   pk: number; employee_name: string; department: string;
@@ -93,7 +95,7 @@ export default function CorrectionRequestsScreen() {
           ListHeaderComponent={<Text style={s.heading}>Correction Requests</Text>}
           ListEmptyComponent={
             <View style={s.empty}>
-              <Text style={s.emptyIcon}>📝</Text>
+              <Ionicons name="create-outline" size={40} color={colors.muted} />
               <Text style={s.emptyTitle}>No correction requests</Text>
             </View>
           }
@@ -136,10 +138,10 @@ export default function CorrectionRequestsScreen() {
               {item.status === 'pending' && (
                 <View style={s.actionRow}>
                   <TouchableOpacity style={s.approveBtn} onPress={() => approve(item.pk)} disabled={busy}>
-                    <Text style={s.approveBtnText}>✓ Approve</Text>
+                    <Text style={s.approveBtnText}>Approve</Text>
                   </TouchableOpacity>
                   <TouchableOpacity style={s.rejectBtn} onPress={() => openReject(item)} disabled={busy}>
-                    <Text style={s.rejectBtnText}>✕ Reject</Text>
+                    <Text style={s.rejectBtnText}>Reject</Text>
                   </TouchableOpacity>
                 </View>
               )}
@@ -178,7 +180,7 @@ export default function CorrectionRequestsScreen() {
 
 const m = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
-  sheet: { backgroundColor: colors.card, borderTopLeftRadius: radius.xxl, borderTopRightRadius: radius.xxl, padding: spacing.xl, ...shadows.lg },
+  sheet: { backgroundColor: colors.card, borderTopLeftRadius: radius.xxl, borderTopRightRadius: radius.xxl, padding: spacing.xl },
   handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.borderStrong, alignSelf: 'center', marginBottom: spacing.lg },
   title: { fontSize: typography.xl, fontWeight: '700', color: colors.ink, marginBottom: spacing.xs },
   subtitle: { fontSize: typography.sm, color: colors.muted, marginBottom: spacing.md },
@@ -189,7 +191,7 @@ const m = StyleSheet.create({
   actions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.lg },
   cancelBtn: { flex: 1, paddingVertical: 14, borderRadius: radius.md, alignItems: 'center', borderWidth: 1.5, borderColor: colors.border },
   cancelText: { color: colors.ink2, fontWeight: '700' },
-  submitBtn: { flex: 1, paddingVertical: 14, borderRadius: radius.md, alignItems: 'center', backgroundColor: colors.danger, ...shadows.sm },
+  submitBtn: { flex: 1, paddingVertical: 14, borderRadius: radius.md, alignItems: 'center', backgroundColor: colors.danger },
   submitDisabled: { opacity: 0.5 },
   submitText: { color: '#fff', fontWeight: '700' },
 });
@@ -201,11 +203,10 @@ const s = StyleSheet.create({
   heading: { fontSize: typography.xxl, fontWeight: '800', color: colors.ink, marginBottom: spacing.lg },
   errorBar: { color: colors.danger, padding: spacing.lg },
   empty: { paddingTop: 60, alignItems: 'center', gap: spacing.sm },
-  emptyIcon: { fontSize: 40 },
   emptyTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink },
   chip: { paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.pill },
   chipText: { fontSize: typography.xs, fontWeight: '700' },
-  card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border, ...shadows.sm },
+  card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.md },
   avatarWrap: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
   avatarText: { fontSize: 14, fontWeight: '700', color: colors.brand },

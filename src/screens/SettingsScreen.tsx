@@ -3,13 +3,14 @@ import {
   View, Text, TextInput, TouchableOpacity, StyleSheet,
   ActivityIndicator, Alert, ScrollView,
 } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Constants from 'expo-constants';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
 import UserProfileSummary from '../components/UserProfileSummary';
 import NotificationToggle from '../components/NotificationToggle';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 export default function SettingsScreen({
   route,
@@ -77,7 +78,9 @@ export default function SettingsScreen({
       {/* ── Force-change banner ── */}
       {isForced && (
         <View style={s.forceBanner}>
-          <Text style={s.forceBannerIcon}>🔒</Text>
+          <View style={s.forceBannerIconWrap}>
+            <Ionicons name="lock-closed-outline" size={24} color={colors.warnDark} />
+          </View>
           <View style={{ flex: 1 }}>
             <Text style={s.forceBannerTitle}>Password change required</Text>
             <Text style={s.forceBannerBody}>
@@ -166,14 +169,14 @@ const s = StyleSheet.create({
     padding: spacing.lg, marginBottom: spacing.md,
     borderWidth: 1, borderColor: colors.warn + '44',
   },
-  forceBannerIcon: { fontSize: 24 },
+  forceBannerIconWrap: { width: 36, height: 36, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center' },
   forceBannerTitle: { fontSize: typography.md, fontWeight: '700', color: colors.warnDark, marginBottom: spacing.xs },
   forceBannerBody: { fontSize: typography.sm, color: colors.ink2, lineHeight: 19 },
 
   card: {
     backgroundColor: colors.card, borderRadius: radius.xl,
     padding: spacing.lg, borderWidth: 1, borderColor: colors.border,
-    marginBottom: spacing.md, ...shadows.sm,
+    marginBottom: spacing.md,
   },
   cardTitle: { fontSize: typography.lg, fontWeight: '700', color: colors.ink, marginBottom: spacing.md },
 
@@ -196,7 +199,7 @@ const s = StyleSheet.create({
   },
   saveBtn: {
     backgroundColor: colors.brand, borderRadius: radius.md,
-    paddingVertical: 14, alignItems: 'center', marginTop: spacing.lg, ...shadows.sm,
+    paddingVertical: 14, alignItems: 'center', marginTop: spacing.lg,
   },
   saveBtnDisabled: { opacity: 0.7 },
   saveBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md },

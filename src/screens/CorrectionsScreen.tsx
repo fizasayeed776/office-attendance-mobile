@@ -4,8 +4,10 @@ import {
   Modal, TextInput, RefreshControl, ActivityIndicator,
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
+import { Ionicons } from '@expo/vector-icons';
 import api from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 type Correction = {
   pk: number; date: string; attendance_type_label: string;
@@ -56,7 +58,7 @@ export default function CorrectionsScreen({ route }: any) {
         showsVerticalScrollIndicator={false}
         ListEmptyComponent={
           <View style={styles.empty}>
-            <Text style={styles.emptyIcon}>🔧</Text>
+            <Ionicons name="construct-outline" size={44} color={colors.muted} />
             <Text style={styles.emptyTitle}>No correction requests</Text>
             <Text style={styles.emptyBody}>Use the button below if attendance wasn't marked correctly.</Text>
           </View>
@@ -160,7 +162,7 @@ function RequestCorrectionModal({ visible, onClose, onSubmitted }: {
                 onPress={() => setType(t)}
               >
                 <Text style={[modal.typeBtnText, type === t && modal.typeBtnTextActive]}>
-                  {t === 'check_in' ? '⬆ Check-in' : '⬇ Check-out'}
+                  {t === 'check_in' ? 'Check-in' : 'Check-out'}
                 </Text>
               </TouchableOpacity>
             ))}
@@ -193,7 +195,7 @@ const modal = StyleSheet.create({
   sheet: {
     backgroundColor: colors.card,
     borderTopLeftRadius: radius.xxl, borderTopRightRadius: radius.xxl,
-    padding: spacing.xl, maxHeight: '85%', ...shadows.lg,
+    padding: spacing.xl, maxHeight: '85%',
   },
   handle: {
     width: 36, height: 4, borderRadius: 2,
@@ -234,7 +236,7 @@ const modal = StyleSheet.create({
   cancelText: { color: colors.ink2, fontWeight: '700' },
   submitBtn: {
     flex: 1, paddingVertical: 14, borderRadius: radius.md,
-    alignItems: 'center', backgroundColor: colors.brand, ...shadows.sm,
+    alignItems: 'center', backgroundColor: colors.brand,
   },
   submitBtnDisabled: { opacity: 0.7 },
   submitText: { color: '#fff', fontWeight: '700' },
@@ -245,14 +247,13 @@ const styles = StyleSheet.create({
   list: { padding: spacing.lg, paddingBottom: 100 },
 
   empty: { paddingTop: 80, alignItems: 'center', gap: spacing.sm },
-  emptyIcon: { fontSize: 44 },
   emptyTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink },
   emptyBody: { fontSize: typography.base, color: colors.muted, textAlign: 'center', paddingHorizontal: spacing.xl },
 
   card: {
     backgroundColor: colors.card, borderRadius: radius.xl,
     padding: spacing.lg, marginBottom: spacing.md,
-    borderWidth: 1, borderColor: colors.border, ...shadows.sm,
+    borderWidth: 1, borderColor: colors.border,
   },
   cardTop: {
     flexDirection: 'row', justifyContent: 'space-between',
@@ -282,7 +283,7 @@ const styles = StyleSheet.create({
   },
   fab: {
     backgroundColor: colors.brand, borderRadius: radius.lg,
-    paddingVertical: 15, alignItems: 'center', ...shadows.lg,
+    paddingVertical: 15, alignItems: 'center',
   },
   fabText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
 });

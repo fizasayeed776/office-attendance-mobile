@@ -7,14 +7,16 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Location from 'expo-location';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { colors, spacing, radius, typography } from '../theme/colors';
+
+import { Ionicons } from '@expo/vector-icons';
 
 type Mode = 'auto' | 'checkin' | 'checkout';
 
-const MODE_CONFIG: { key: Mode; label: string; icon: string }[] = [
-  { key: 'auto',     label: 'Auto',       icon: '⚡' },
-  { key: 'checkin',  label: 'Check-in',   icon: '⬆' },
-  { key: 'checkout', label: 'Check-out',  icon: '⬇' },
+const MODE_CONFIG: { key: Mode; label: string; ionicon: string }[] = [
+  { key: 'auto',     label: 'Auto',      ionicon: 'flash-outline'     },
+  { key: 'checkin',  label: 'Check-in',  ionicon: 'arrow-up-outline'  },
+  { key: 'checkout', label: 'Check-out', ionicon: 'arrow-down-outline' },
 ];
 
 export default function FaceAttendanceScreen() {
@@ -121,7 +123,7 @@ export default function FaceAttendanceScreen() {
             onPress={() => { setMode(m.key); setResult(null); }}
             activeOpacity={0.8}
           >
-            <Text style={s.modeIcon}>{m.icon}</Text>
+            <Ionicons name={m.ionicon as any} size={14} color={mode === m.key ? '#fff' : colors.tabBarInactive} />
             <Text style={[s.modeBtnText, mode === m.key && s.modeBtnTextActive]}>
               {m.label}
             </Text>
@@ -135,7 +137,7 @@ export default function FaceAttendanceScreen() {
           s.resultBox,
           result.ok ? s.resultBoxOk : s.resultBoxFail,
         ]}>
-          <Text style={s.resultIcon}>{result.ok ? '✓' : '✕'}</Text>
+          <Ionicons name={result.ok ? 'checkmark-circle' : 'close-circle'} size={20} color={result.ok ? colors.success : colors.danger} />
           <Text style={[s.resultText, { color: result.ok ? colors.success : colors.danger }]}>
             {result.text}
           </Text>
@@ -151,7 +153,7 @@ export default function FaceAttendanceScreen() {
       >
         {busy
           ? <ActivityIndicator color="#fff" size="small" />
-          : <Text style={s.captureBtnText}>📷  Scan Face</Text>}
+          : <><Ionicons name="camera-outline" size={20} color="#fff" /><Text style={s.captureBtnText}> Scan Face</Text></> }
       </TouchableOpacity>
     </View>
   );
@@ -165,7 +167,7 @@ const s = StyleSheet.create({
   center: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center', padding: spacing.xl, gap: spacing.md },
   permTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink, textAlign: 'center' },
   permBody:  { fontSize: typography.base, color: colors.muted, textAlign: 'center', lineHeight: 21 },
-  permBtn:   { backgroundColor: colors.brand, borderRadius: radius.md, paddingVertical: 13, paddingHorizontal: spacing.xl, ...shadows.sm },
+  permBtn:   { backgroundColor: colors.brand, borderRadius: radius.md, paddingVertical: 13, paddingHorizontal: spacing.xl },
   permBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
 
   // ── Camera
@@ -178,7 +180,6 @@ const s = StyleSheet.create({
     backgroundColor: colors.sidebarBorder,
     marginBottom: spacing.md,
     position: 'relative',
-    ...shadows.lg,
   },
   camera: { flex: 1 },
 
@@ -209,7 +210,6 @@ const s = StyleSheet.create({
     borderWidth: 1.5, borderColor: colors.sidebarBorder,
   },
   modeBtnActive: { backgroundColor: colors.brand, borderColor: colors.brand },
-  modeIcon: { fontSize: 14, color: '#fff' },
   modeBtnText: { fontSize: typography.sm, fontWeight: '600', color: colors.tabBarInactive },
   modeBtnTextActive: { color: '#fff' },
 
@@ -226,7 +226,7 @@ const s = StyleSheet.create({
   // ── Capture button
   captureBtn: {
     backgroundColor: colors.brand, borderRadius: radius.lg,
-    paddingVertical: 16, alignItems: 'center', ...shadows.md,
+    paddingVertical: 16, alignItems: 'center',
   },
   captureBtnBusy: { opacity: 0.75 },
   captureBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.lg, letterSpacing: 0.3 },

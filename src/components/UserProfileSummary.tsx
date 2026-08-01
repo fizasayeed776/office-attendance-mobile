@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 function initials(name?: string) {
   if (!name) return '?';
@@ -66,7 +66,7 @@ const s = StyleSheet.create({
   card: {
     backgroundColor: colors.card, borderRadius: radius.xl,
     borderWidth: 1, borderColor: colors.border,
-    marginBottom: spacing.md, overflow: 'hidden', ...shadows.sm,
+    marginBottom: spacing.md, overflow: 'hidden',
   },
   header: {
     flexDirection: 'row', alignItems: 'center', gap: spacing.md,
@@ -75,7 +75,7 @@ const s = StyleSheet.create({
   },
   avatar: {
     width: 60, height: 60, borderRadius: 30, backgroundColor: colors.brand,
-    alignItems: 'center', justifyContent: 'center', ...shadows.sm,
+    alignItems: 'center', justifyContent: 'center',
   },
   avatarText: { color: '#fff', fontSize: typography.xxl, fontWeight: '700' },
   meta: { flex: 1, gap: spacing.xs },

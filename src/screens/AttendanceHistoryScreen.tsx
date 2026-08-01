@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import api from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 type AttendanceRow = {
   date: string; check_in: string | null; check_out: string | null;
@@ -183,7 +183,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1,
     borderColor: colors.border,
-    ...shadows.sm,
+    
   },
   scoreLabel: {
     fontSize: typography.xs, fontWeight: '700',
@@ -203,7 +203,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderWidth: 1, borderColor: colors.border,
     minWidth: '30%',
-    ...shadows.sm,
+    
   },
   statNum: { fontSize: typography.xxl, fontWeight: '800' },
   statLabel: { fontSize: typography.xs, color: colors.muted, fontWeight: '600', marginTop: 2, textAlign: 'center' },
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     marginBottom: spacing.sm,
     borderWidth: 1, borderColor: colors.border,
-    ...shadows.sm,
+    
   },
   rowLeft: { gap: spacing.xs },
   rowDate: { fontSize: typography.base, fontWeight: '700', color: colors.ink },

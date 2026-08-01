@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, TextInput, Modal, ScrollView } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import api from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 export default function DepartmentsScreen() {
   const [loading, setLoading]   = useState(true);
@@ -62,13 +63,13 @@ export default function DepartmentsScreen() {
       {loading ? (
         <View style={s.loadingWrap}><ActivityIndicator size="large" color={colors.brand} /></View>
       ) : departments.length === 0 ? (
-        <View style={s.empty}><Text style={s.emptyIcon}>🏢</Text><Text style={s.emptyTitle}>No departments yet</Text></View>
+        <View style={s.empty}><Ionicons name="business-outline" size={40} color={colors.muted} /><Text style={s.emptyTitle}>No departments yet</Text></View>
       ) : (
         <ScrollView contentContainerStyle={s.list} showsVerticalScrollIndicator={false}>
           {departments.map((dept) => (
             <View key={dept.pk} style={s.card}>
               <View style={s.cardTop}>
-                <View style={s.iconWrap}><Text style={s.icon}>🏢</Text></View>
+                <View style={s.iconWrap}><Ionicons name="business-outline" size={22} color={colors.brand} /></View>
                 <View style={s.cardMeta}>
                   <Text style={s.cardTitle}>{dept.name}</Text>
                   <View style={s.countBadge}><Text style={s.countText}>{dept.employee_count} {dept.employee_count === 1 ? 'employee' : 'employees'}</Text></View>
@@ -113,7 +114,7 @@ export default function DepartmentsScreen() {
 
 const m = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'center', padding: spacing.lg },
-  sheet: { backgroundColor: colors.card, borderRadius: radius.xxl, padding: spacing.xl, ...shadows.lg },
+  sheet: { backgroundColor: colors.card, borderRadius: radius.xxl, padding: spacing.xl },
   handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.borderStrong, alignSelf: 'center', marginBottom: spacing.lg },
   title: { fontSize: typography.xl, fontWeight: '700', color: colors.ink, marginBottom: spacing.md },
   label: { fontSize: typography.sm, fontWeight: '600', color: colors.ink2, marginBottom: spacing.xs, marginTop: spacing.md },
@@ -124,7 +125,7 @@ const m = StyleSheet.create({
   actions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.lg },
   cancelBtn: { flex: 1, paddingVertical: 14, borderRadius: radius.md, alignItems: 'center', borderWidth: 1.5, borderColor: colors.border },
   cancelText: { color: colors.ink2, fontWeight: '700' },
-  saveBtn: { flex: 1, paddingVertical: 14, borderRadius: radius.md, alignItems: 'center', backgroundColor: colors.brand, ...shadows.sm },
+  saveBtn: { flex: 1, paddingVertical: 14, borderRadius: radius.md, alignItems: 'center', backgroundColor: colors.brand },
   saveBtnDisabled: { opacity: 0.7 },
   saveText: { color: '#fff', fontWeight: '700' },
 });
@@ -133,19 +134,18 @@ const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   toolbar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: spacing.lg },
   heading: { fontSize: typography.xxl, fontWeight: '800', color: colors.ink },
-  addBtn: { backgroundColor: colors.brand, borderRadius: radius.md, paddingVertical: spacing.sm, paddingHorizontal: spacing.md, ...shadows.sm },
+  addBtn: { backgroundColor: colors.brand, borderRadius: radius.md, paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
   addBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.sm },
   errorBanner: { backgroundColor: colors.dangerSoft, borderRadius: radius.md, padding: spacing.md, marginHorizontal: spacing.lg, marginBottom: spacing.sm, borderLeftWidth: 3, borderLeftColor: colors.danger },
   errorText: { color: colors.danger, fontSize: typography.sm },
   loadingWrap: { paddingTop: 60, alignItems: 'center' },
   list: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxxl },
   empty: { paddingTop: 60, alignItems: 'center', gap: spacing.sm },
-  emptyIcon: { fontSize: 40 },
+  emptyIcon: {},
   emptyTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink },
-  card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border, ...shadows.sm },
+  card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.sm },
   iconWrap: { width: 44, height: 44, borderRadius: radius.lg, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
-  icon: { fontSize: 22 },
   cardMeta: { flex: 1, gap: spacing.xs },
   cardTitle: { fontSize: typography.lg, fontWeight: '700', color: colors.ink },
   countBadge: { alignSelf: 'flex-start', backgroundColor: colors.bgDeep, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: 2 },

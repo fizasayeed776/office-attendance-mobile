@@ -1,11 +1,12 @@
 import { View, Text, StyleSheet } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { colors, spacing, radius, typography } from '../theme/colors';
 
 export default function PlaceholderScreen({ route }: { route: any }) {
   return (
     <View style={s.screen}>
       <View style={s.iconWrap}>
-        <Text style={s.icon}>🚧</Text>
+        <Ionicons name="construct-outline" size={36} color={colors.muted} />
       </View>
       <Text style={s.title}>{route.name}</Text>
       <Text style={s.body}>This section is coming in a future update.</Text>
@@ -25,7 +26,6 @@ const s = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     marginBottom: spacing.sm,
   },
-  icon: { fontSize: 36 },
   title: { fontSize: typography.xxl, fontWeight: '700', color: colors.ink, textAlign: 'center' },
   body:  { fontSize: typography.base, color: colors.muted, textAlign: 'center', lineHeight: 21 },
 });

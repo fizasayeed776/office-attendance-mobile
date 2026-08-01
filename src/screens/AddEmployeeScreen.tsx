@@ -4,8 +4,9 @@ import {
   TouchableOpacity, ActivityIndicator, Alert, Platform,
 } from 'react-native';
 import { CameraView, useCameraPermissions } from 'expo-camera';
+import { Ionicons } from '@expo/vector-icons';
 import api from '../api/client';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { colors, spacing, radius, typography } from '../theme/colors';
 
 type Step = 'details' | 'capture';
 
@@ -209,7 +210,7 @@ export default function AddEmployeeScreen({ navigation }: any) {
           >
             {captureLoading
               ? <ActivityIndicator color="#fff" />
-              : <Text style={styles.captureBtnText}>📷  Capture Sample</Text>}
+              : <View style={styles.captureBtnInner}><Ionicons name="camera" size={18} color="#fff" /><Text style={styles.captureBtnText}>  Capture Sample</Text></View>}
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -220,9 +221,7 @@ export default function AddEmployeeScreen({ navigation }: any) {
           >
             {trainLoading
               ? <ActivityIndicator color={canTrain ? '#fff' : colors.muted} />
-              : <Text style={[styles.trainBtnText, !canTrain && styles.trainBtnTextDisabled]}>
-                  ✓  Register Face
-                </Text>}
+              : <View style={styles.trainBtnInner}><Ionicons name="checkmark" size={18} color={canTrain ? '#fff' : colors.muted} /><Text style={[styles.trainBtnText, !canTrain && styles.trainBtnTextDisabled]}>  Register Face</Text></View>}
           </TouchableOpacity>
 
           <TouchableOpacity
@@ -230,7 +229,7 @@ export default function AddEmployeeScreen({ navigation }: any) {
             onPress={() => { setStep('details'); setSampleCount(0); setEmployeePk(null); }}
             disabled={captureLoading || trainLoading}
           >
-            <Text style={styles.backBtnText}>← Edit details</Text>
+            <View style={styles.backBtnInner}><Ionicons name="chevron-back" size={16} color={colors.mutedLight} /><Text style={styles.backBtnText}>Edit details</Text></View>
           </TouchableOpacity>
         </View>
       </View>
@@ -338,7 +337,6 @@ const styles = StyleSheet.create({
     marginBottom: spacing.md,
     borderWidth: 1,
     borderColor: colors.border,
-    ...shadows.sm,
   },
   sectionTitle: {
     fontSize: typography.sm,
@@ -367,7 +365,6 @@ const styles = StyleSheet.create({
     paddingVertical: 16,
     alignItems: 'center',
     marginTop: spacing.sm,
-    ...shadows.md,
   },
   submitBtnDisabled: { opacity: 0.7 },
   submitBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md, letterSpacing: 0.3 },
@@ -383,7 +380,6 @@ const styles = StyleSheet.create({
     borderWidth: 2,
     borderColor: colors.brand,
     backgroundColor: colors.sidebarBorder,
-    ...shadows.lg,
   },
   camera: { flex: 1 },
 
@@ -430,8 +426,8 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     paddingVertical: 15,
     alignItems: 'center',
-    ...shadows.md,
   },
+  captureBtnInner: { flexDirection: 'row', alignItems: 'center' },
   captureBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
 
   trainBtn: {
@@ -439,12 +435,13 @@ const styles = StyleSheet.create({
     borderRadius: radius.lg,
     paddingVertical: 15,
     alignItems: 'center',
-    ...shadows.sm,
   },
+  trainBtnInner: { flexDirection: 'row', alignItems: 'center' },
   trainBtnDisabled: { backgroundColor: colors.bgDeep },
   trainBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
   trainBtnTextDisabled: { color: colors.muted },
 
   backBtn: { alignItems: 'center', paddingVertical: spacing.sm },
+  backBtnInner: { flexDirection: 'row', alignItems: 'center', gap: 2 },
   backBtnText: { color: colors.mutedLight, fontWeight: '600', fontSize: typography.base },
 });

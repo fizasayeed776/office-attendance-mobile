@@ -6,7 +6,9 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
-import { colors, spacing, radius, shadows, typography } from '../theme/colors';
+import { colors, spacing, radius, typography } from '../theme/colors';
+
+import { Ionicons } from '@expo/vector-icons';
 
 type DashboardData = {
   employee: {
@@ -24,15 +26,15 @@ type DashboardData = {
 };
 
 type ActionDef = {
-  label: string; sub: string; icon: string;
+  label: string; sub: string; ionicon: string;
   screen: string; primary?: boolean;
 };
 
 const ACTIONS: ActionDef[] = [
-  { label: 'Mark Attendance', sub: 'Face recognition',  icon: '📷', screen: 'FaceAttendance', primary: true  },
-  { label: 'Apply for Leave', sub: 'Submit a request',  icon: '📋', screen: 'Leaves'                         },
-  { label: 'Request Fix',     sub: 'Attendance correction',icon: '🔧', screen: 'Corrections'                 },
-  { label: 'View History',    sub: 'Past records',      icon: '📅', screen: 'History'                        },
+  { label: 'Mark Attendance', sub: 'Face recognition',     ionicon: 'camera-outline',       screen: 'FaceAttendance', primary: true },
+  { label: 'Apply for Leave', sub: 'Submit a request',     ionicon: 'document-text-outline', screen: 'Leaves'                       },
+  { label: 'Request Fix',     sub: 'Attendance correction',ionicon: 'construct-outline',     screen: 'Corrections'                  },
+  { label: 'View History',    sub: 'Past records',         ionicon: 'calendar-outline',      screen: 'History'                      },
 ];
 
 function initials(name?: string) {
@@ -130,7 +132,7 @@ export default function DashboardScreen({ navigation }: any) {
         <Text style={[styles.heroStatus, { color: statusColor }]}>{statusLabel}</Text>
         {att?.is_late && (
           <View style={styles.lateBadge}>
-            <Text style={styles.lateBadgeText}>⏱ Late arrival</Text>
+            <Text style={styles.lateBadgeText}>Late arrival</Text>
           </View>
         )}
         {checkedIn && !checkedOut && (
@@ -166,10 +168,10 @@ export default function DashboardScreen({ navigation }: any) {
         <View style={styles.alertCard}>
           <Text style={styles.alertTitle}>Pending approvals</Text>
           {!!data?.pending_leaves && (
-            <Text style={styles.alertItem}>📋  {data.pending_leaves} leave request{data.pending_leaves > 1 ? 's' : ''} awaiting approval</Text>
+            <Text style={styles.alertItem}>{data.pending_leaves} leave request{data.pending_leaves > 1 ? 's' : ''} awaiting approval</Text>
           )}
           {!!data?.pending_corrections && (
-            <Text style={styles.alertItem}>🔧  {data.pending_corrections} correction request{data.pending_corrections > 1 ? 's' : ''} awaiting approval</Text>
+            <Text style={styles.alertItem}>{data.pending_corrections} correction request{data.pending_corrections > 1 ? 's' : ''} awaiting approval</Text>
           )}
         </View>
       )}
@@ -184,7 +186,12 @@ export default function DashboardScreen({ navigation }: any) {
             onPress={() => handleAction(action.screen)}
             activeOpacity={0.75}
           >
-            <Text style={styles.actionIcon}>{action.icon}</Text>
+            <Ionicons
+            name={action.ionicon as any}
+            size={22}
+            color={action.primary ? '#fff' : colors.brand}
+            style={{ marginBottom: spacing.xs }}
+          />
             <Text style={[styles.actionLabel, action.primary && styles.actionLabelPrimary]}>
               {action.label}
             </Text>
@@ -240,7 +247,6 @@ const styles = StyleSheet.create({
     width: 52, height: 52, borderRadius: 26,
     backgroundColor: colors.brand,
     alignItems: 'center', justifyContent: 'center',
-    ...shadows.sm,
   },
   avatarText: { color: '#fff', fontSize: typography.lg, fontWeight: '700' },
   profileMeta: { flex: 1 },
@@ -265,7 +271,6 @@ const styles = StyleSheet.create({
     padding: spacing.lg,
     marginBottom: spacing.lg,
     borderWidth: 1,
-    ...shadows.sm,
   },
   heroTop: {
     flexDirection: 'row',
@@ -337,12 +342,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
     gap: spacing.xxs,
-    ...shadows.sm,
   },
   actionCardPrimary: {
     backgroundColor: colors.brand,
     borderColor: colors.brand,
-    ...shadows.md,
   },
   actionIcon: { fontSize: 22, marginBottom: spacing.xs },
   actionLabel: { fontSize: typography.md, fontWeight: '700', color: colors.ink },
@@ -364,7 +367,6 @@ const styles = StyleSheet.create({
     padding: spacing.md,
     borderWidth: 1,
     borderColor: colors.border,
-    ...shadows.sm,
   },
   balanceType: {
     fontSize: typography.xs,
