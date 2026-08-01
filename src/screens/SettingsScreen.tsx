@@ -14,8 +14,6 @@ import UserProfileSummary from '../components/UserProfileSummary';
 import NotificationToggle from '../components/NotificationToggle';
 import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
-const BIO_MAX_LENGTH = 300;
-
 export default function SettingsScreen({
   route,
   forceOnly = false,
@@ -30,7 +28,6 @@ export default function SettingsScreen({
   const [currentPw, setCurrentPw]   = useState('');
   const [newPw, setNewPw]           = useState('');
   const [confirmPw, setConfirmPw]   = useState('');
-  const [bio, setBio]               = useState(adminUser?.bio || '');
   const [selectedImage, setSelectedImage] = useState(adminUser?.profile_picture || '');
   const [busy, setBusy]             = useState(false);
   const [message, setMessage]       = useState('');
@@ -103,13 +100,13 @@ export default function SettingsScreen({
     setMessage(''); setIsError(false);
     setBusy(true);
     try {
-      const payload: any = { bio };
+      const payload: any = {};
       if (selectedImage) {
         payload.profile_picture = selectedImage;
       }
-      const response = await api.patch('/api/admin/profile/', payload);
+      await api.patch('/api/admin/profile/', payload);
       setMessage('Profile updated successfully.');
-      updateAdminUser({ bio, profile_picture: selectedImage });
+      updateAdminUser({ profile_picture: selectedImage });
       setBusy(false);
     } catch (err: any) {
       setMessage(err.message || 'Failed to save profile.');
@@ -139,23 +136,11 @@ export default function SettingsScreen({
             <TouchableOpacity style={s.smallButton} onPress={handlePickImage}>
               <Text style={s.smallButtonText}>Change photo</Text>
             </TouchableOpacity>
-            <TouchableOpacity style={[s.smallButton, s.smallButtonSecondary]} onPress={() => { setSelectedImage(adminUser?.profile_picture || ''); setBio(adminUser?.bio || ''); }}>
+            <TouchableOpacity style={[s.smallButton, s.smallButtonSecondary]} onPress={() => { setSelectedImage(adminUser?.profile_picture || ''); }}>
               <Text style={[s.smallButtonText, s.smallButtonSecondaryText]}>Reset</Text>
             </TouchableOpacity>
           </View>
           <View style={s.profileBody}>
-            <Text style={s.label}>Bio</Text>
-            <TextInput
-              style={[s.input, s.bioInput]}
-              value={bio}
-              onChangeText={setBio}
-              multiline
-              placeholder="Tell people a bit about yourself"
-              placeholderTextColor={colors.mutedLight}
-              editable={!busy}
-              maxLength={BIO_MAX_LENGTH}
-            />
-            <Text style={s.charCount}>{bio.length}/{BIO_MAX_LENGTH}</Text>
             <TouchableOpacity
               style={[s.saveBtn, busy && s.saveBtnDisabled]}
               onPress={handleSaveProfile}
@@ -298,9 +283,6 @@ const s = StyleSheet.create({
   smallButtonSecondaryText: {
     color: colors.ink,
   },
-  bioInput: {
-    minHeight: 100, textAlignVertical: 'top', marginTop: spacing.xs,
-  },
   cardTitle: { fontSize: typography.lg, fontFamily: 'Inter_700Bold', color: colors.ink, marginBottom: spacing.md },
 
   messageBanner: {
@@ -326,9 +308,6 @@ const s = StyleSheet.create({
   },
   saveBtnDisabled: { opacity: 0.7 },
   saveBtnText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.md },
-  charCount: {
-    marginTop: spacing.xs, color: colors.muted, alignSelf: 'flex-end', fontSize: typography.xs,
-  },
 
   infoRow: {
     flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center',

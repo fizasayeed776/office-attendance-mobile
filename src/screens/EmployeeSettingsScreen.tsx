@@ -13,8 +13,6 @@ import NotificationToggle from '../components/NotificationToggle';
 import api from '../api/client';
 import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
-const BIO_MAX_LENGTH = 300;
-
 export default function EmployeeSettingsScreen() {
   const { logout, employee, updateEmployee } = useAuth();
   const insets     = useSafeAreaInsets();
@@ -23,7 +21,6 @@ export default function EmployeeSettingsScreen() {
   const [currentPw, setCurrentPw] = useState('');
   const [newPw, setNewPw]         = useState('');
   const [confirmPw, setConfirmPw] = useState('');
-  const [bio, setBio]             = useState(employee?.bio || '');
   const [selectedImage, setSelectedImage] = useState(employee?.profile_picture || '');
   const [busy, setBusy]           = useState(false);
   const [message, setMessage]     = useState('');
@@ -89,13 +86,13 @@ export default function EmployeeSettingsScreen() {
     setMessage(''); setIsError(false);
     setBusy(true);
     try {
-      const payload: any = { bio };
+      const payload: any = {};
       if (selectedImage) {
         payload.profile_picture = selectedImage;
       }
       await api.patch('/api/employees/profile/', payload);
       setMessage('Profile updated successfully.');
-      updateEmployee({ bio, profile_picture: selectedImage });
+      updateEmployee({ profile_picture: selectedImage });
     } catch (e: any) {
       setMessage(e.message || 'Failed to save profile.');
       setIsError(true);
@@ -117,23 +114,11 @@ export default function EmployeeSettingsScreen() {
           <TouchableOpacity style={s.smallButton} onPress={handlePickImage}>
             <Text style={s.smallButtonText}>Change photo</Text>
           </TouchableOpacity>
-          <TouchableOpacity style={[s.smallButton, s.smallButtonSecondary]} onPress={() => { setSelectedImage(employee?.profile_picture || ''); setBio(employee?.bio || ''); }}>
+          <TouchableOpacity style={[s.smallButton, s.smallButtonSecondary]} onPress={() => { setSelectedImage(employee?.profile_picture || ''); }}>
             <Text style={[s.smallButtonText, s.smallButtonSecondaryText]}>Reset</Text>
           </TouchableOpacity>
         </View>
         <View style={s.profileBody}>
-          <Text style={s.label}>Bio</Text>
-          <TextInput
-            style={[s.input, s.bioInput]}
-            value={bio}
-            onChangeText={setBio}
-            multiline
-            placeholder="Tell people a bit about yourself"
-            placeholderTextColor={colors.mutedLight}
-            editable={!busy}
-            maxLength={BIO_MAX_LENGTH}
-          />
-          <Text style={s.charCount}>{bio.length}/{BIO_MAX_LENGTH}</Text>
           <TouchableOpacity
             style={[s.saveBtn, busy && s.saveBtnDisabled]}
             onPress={handleSaveProfile}
@@ -254,9 +239,6 @@ const s = StyleSheet.create({
   smallButtonSecondaryText: {
     color: colors.ink,
   },
-  bioInput: {
-    minHeight: 100, textAlignVertical: 'top', marginTop: spacing.xs,
-  },
   cardTitle: { fontSize: typography.lg, fontFamily: 'Inter_700Bold', color: colors.ink, marginBottom: spacing.md },
 
   messageBanner: {
@@ -282,9 +264,6 @@ const s = StyleSheet.create({
   },
   saveBtnDisabled: { opacity: 0.7 },
   saveBtnText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.md },
-  charCount: {
-    marginTop: spacing.xs, color: colors.muted, alignSelf: 'flex-end', fontSize: typography.xs,
-  },
 
   logoutBtn: {
     borderWidth: 1.5, borderColor: colors.danger,

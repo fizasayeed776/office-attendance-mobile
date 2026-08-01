@@ -12,7 +12,6 @@ export type Employee = {
   username: string;
   shift_name?: string;
   profile_picture?: string;
-  bio?: string;
 };
 
 export type AdminUser = {
@@ -22,7 +21,6 @@ export type AdminUser = {
   staff_role: string;
   staff_department: string;
   profile_picture?: string;
-  bio?: string;
 };
 
 type AuthContextValue = {
@@ -65,7 +63,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           staff_role: data.staff_role,
           staff_department: data.staff_department,
           profile_picture: data.profile_picture,
-          bio: data.bio,
         });
         setEmployee(null);
         setMustChangePassword(data.must_change_password === true);
@@ -80,7 +77,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           phone: '',
           username: data.username,
           profile_picture: data.profile_picture,
-          bio: data.bio,
         });
         setAdminUser(null);
         setMustChangePassword(false);
@@ -155,7 +151,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           staff_role: data.staff_role,
           staff_department: data.staff_department,
           profile_picture: data.profile_picture,
-          bio: data.bio,
         });
         console.log('[AUTH] AuthContext.login: CALLED setAdminUser');
         setEmployee(null);
@@ -176,7 +171,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setEmployee({
           ...data.employee,
           profile_picture: data.employee.profile_picture,
-          bio: data.employee.bio,
         });
         console.log('[AUTH] AuthContext.login: CALLED setEmployee');
         setAdminUser(null);
