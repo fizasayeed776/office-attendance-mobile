@@ -16,6 +16,9 @@ export default function UserProfileSummary(_: UserProfileSummaryProps) {
   return (
     <View style={s.container}>
       <View style={s.header}>
+        <View style={s.avatar}>
+          <Text style={s.avatarText}>{initial(user?.name)}</Text>
+        </View>
         <View style={s.meta}>
           <Text style={s.name}>{user?.name ?? 'Unknown user'}</Text>
           <Text style={s.username}>@{user?.username ?? 'unknown'}</Text>
@@ -46,6 +49,11 @@ function InfoRow({ label, value, last }: { label: string; value: string; last?: 
       <Text style={i.value}>{value}</Text>
     </View>
   );
+}
+function initial(name?: string | null) {
+  if (!name) return '•';
+  const s = name.trim();
+  return s.length ? s.charAt(0).toUpperCase() : '•';
 }
 const i = StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.divider },
