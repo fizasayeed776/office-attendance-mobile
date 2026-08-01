@@ -53,6 +53,26 @@ export const tokenStorage = {
   },
 };
 
+// ─── Global 401 force-logout handler ────────────────────────────────────────
+// AuthContext registers a callback here after it mounts. When the interceptor
+// sees a 401 on a request that carried a Token header (i.e. an authenticated
+// request, not a login attempt), it calls this to clear state and redirect to
+// the Login screen — without a circular import between client.ts ↔ AuthContext.
+//
+// We guard with a flag so repeated rapid 401s (e.g. several inflight requests
+// all failing at once) only trigger the logout sequence once.
+let _unauthorizedHandler: (() => void) | null = null;
+let _handlerFiring = false;
+
+export function setUnauthorizedHandler(handler: () => void): void {
+  _unauthorizedHandler = handler;
+}
+
+export function clearUnauthorizedHandler(): void {
+  _unauthorizedHandler = null;
+}
+// ────────────────────────────────────────────────────────────────────────────
+
 export const api = axios.create({
   baseURL: API_BASE_URL,
   timeout: 20000,
@@ -112,13 +132,13 @@ api.interceptors.response.use(
         isNetworkError: error?.code === 'ERR_NETWORK',
         isCORS: error?.message?.includes('CORS'),
       });
-      
+
       if (error?.code === 'ECONNABORTED') {
         const message = 'Request timed out. Please check your internet connection and the server address in your settings.';
         console.error('[API] TIMEOUT ERROR:', { apiBaseUrl: API_BASE_URL });
         return Promise.reject(new Error(message));
       }
-      
+
       if (error?.code === 'ERR_NETWORK' || error?.message?.includes('Network')) {
         const message = `Network error: Unable to reach ${API_BASE_URL}. Please check your internet connection and ensure the server is accessible.`;
         console.error('[API] NETWORK ERROR:', { apiBaseUrl: API_BASE_URL, errorCode: error?.code });
@@ -139,10 +159,37 @@ api.interceptors.response.use(
     // Server responded with error status
     const status = error?.response?.status;
     const data = error?.response?.data;
-    
+
+    // ── Global force-logout on 401 for authenticated requests ──────────────
+    // A 401 from a request that carried a Token header means the token is no
+    // longer valid (employee deleted, token revoked, etc.). We fire the
+    // registered handler ONCE to clear state and navigate to Login.
+    //
+    // We deliberately do NOT fire this for requests that had no Authorization
+    // header (i.e. POST /api/mobile/login/ — wrong credentials should just
+    // surface the "Invalid username or password" error on the login screen).
+    if (
+      status === 401 &&
+      error?.config?.headers?.Authorization?.startsWith('Token ') &&
+      _unauthorizedHandler &&
+      !_handlerFiring
+    ) {
+      _handlerFiring = true;
+      console.warn('[API] 401 on authenticated request — triggering force-logout');
+      // Fire async but don't await — the interceptor must return synchronously.
+      // The handler clears storage and sets React state; React re-renders to
+      // Login on the next frame.
+      Promise.resolve().then(() => {
+        _unauthorizedHandler?.();
+        // Reset the flag after a short delay so a fresh login can work normally.
+        setTimeout(() => { _handlerFiring = false; }, 2000);
+      });
+    }
+    // ───────────────────────────────────────────────────────────────────────
+
     // Try to extract error message from response
     let message = data?.error || data?.message || error?.message || 'Something went wrong.';
-    
+
     // Handle specific HTTP status codes
     if (status === 400) {
       message = message || 'Invalid request. Please check your input and try again.';

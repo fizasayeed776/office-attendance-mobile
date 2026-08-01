@@ -1,5 +1,5 @@
 import { createContext, useContext, useEffect, useState, useCallback } from 'react';
-import api, { tokenStorage } from '../api/client';
+import api, { tokenStorage, setUnauthorizedHandler, clearUnauthorizedHandler } from '../api/client';
 
 export type Employee = {
   pk: number;
@@ -105,16 +105,16 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         password,
         device_label: 'React Native app',
       });
-      
+
       // Extract data from response
       const data = response?.data;
-      console.log('[AUTH] AuthContext.login RESPONSE RECEIVED', { 
-        hasData: !!data, 
+      console.log('[AUTH] AuthContext.login RESPONSE RECEIVED', {
+        hasData: !!data,
         status: response?.status,
         dataKeys: data ? Object.keys(data) : [],
         timestamp: new Date().toISOString()
       });
-      
+
       // Validate response structure
       if (!data) {
         console.error('[AUTH] AuthContext.login VALIDATION ERROR: Response data is empty or null');
@@ -149,14 +149,14 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setEmployee(null);
         setMustChangePassword(data.must_change_password === true);
         console.log('[AUTH] AuthContext.login: ADMIN STATE UPDATES COMPLETE');
-      } 
+      }
       // Handle employee login
       else if (data.employee) {
         console.log('[AUTH] AuthContext.login: EMPLOYEE login detected', { pk: data.employee.pk, username: data.employee.username });
         if (!data.employee.pk || !data.employee.username) {
-          console.error('[AUTH] AuthContext.login EMPLOYEE ERROR missing fields', { 
-            employeePk: data.employee.pk, 
-            employeeUsername: data.employee.username 
+          console.error('[AUTH] AuthContext.login EMPLOYEE ERROR missing fields', {
+            employeePk: data.employee.pk,
+            employeeUsername: data.employee.username
           });
           throw new Error('Server returned incomplete employee information. Please try again.');
         }
@@ -166,17 +166,17 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         setAdminUser(null);
         setMustChangePassword(false);
         console.log('[AUTH] AuthContext.login: EMPLOYEE STATE UPDATES COMPLETE');
-      } 
+      }
       // Unknown response format
       else {
-        console.error('[AUTH] AuthContext.login ERROR: Unexpected response format', { 
-          hasRole: !!data.role, 
+        console.error('[AUTH] AuthContext.login ERROR: Unexpected response format', {
+          hasRole: !!data.role,
           hasEmployee: !!data.employee,
           dataKeys: Object.keys(data || {})
         });
         throw new Error('Unexpected server response format. Please try again or contact support.');
       }
-      
+
       console.log('[AUTH] AuthContext.login SUCCESS', { timestamp: new Date().toISOString() });
     } catch (err: any) {
       console.error('[AUTH] AuthContext.login CAUGHT ERROR', {
@@ -186,7 +186,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         errorData: err?.response?.data,
         timestamp: new Date().toISOString()
       });
-      
+
       // Ensure token is cleared on any error
       try {
         await tokenStorage.clear();
@@ -194,7 +194,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       } catch (clearErr) {
         console.error('[AUTH] AuthContext.login: Failed to clear token after error', clearErr);
       }
-      
+
       // Re-throw with user-friendly message
       const userMessage = err?.message || 'Login failed. Please check your credentials and try again.';
       throw new Error(userMessage);
@@ -212,6 +212,33 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setAdminUser(null);
     setMustChangePassword(false);
   }, []);
+
+  // ── Force-logout: used when the API interceptor sees a 401 on an
+  // authenticated request (deleted employee, revoked token, etc.).
+  // Skips the /api/mobile/logout/ network call since the token is already
+  // dead on the server — just clears local state and storage.
+  const forceLogout = useCallback(async () => {
+    console.warn('[AUTH] forceLogout triggered — clearing session without server call');
+    await tokenStorage.clear();
+    setEmployee(null);
+    setAdminUser(null);
+    setMustChangePassword(false);
+  }, []);
+
+  // Register / unregister the global 401 handler with the Axios client.
+  // This runs once after mount and cleans up on unmount, breaking the
+  // circular-import problem: client.ts never imports AuthContext, it just
+  // calls whatever callback was registered here.
+  useEffect(() => {
+    setUnauthorizedHandler(() => {
+      forceLogout().catch((err) =>
+        console.error('[AUTH] forceLogout error in 401 handler:', err)
+      );
+    });
+    return () => {
+      clearUnauthorizedHandler();
+    };
+  }, [forceLogout]);
 
   return (
     <AuthContext.Provider value={{ loading, employee, adminUser, mustChangePassword, setMustChangePassword, login, logout }}>
