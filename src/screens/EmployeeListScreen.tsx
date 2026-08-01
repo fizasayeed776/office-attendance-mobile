@@ -58,7 +58,7 @@ function InfoRow({ label, value }: { label: string; value: string }) {
   );
 }
 const infoStyles = StyleSheet.create({
-  row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.divider },
+  row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.divider },
   label: { fontSize: typography.sm, color: colors.muted, fontFamily: 'Inter_500Medium' },
   value: { fontSize: typography.sm, color: colors.ink2, fontFamily: 'Inter_600SemiBold', maxWidth: '60%', textAlign: 'right' },
 });
