@@ -121,27 +121,29 @@ export default function EmployeeSettingsScreen() {
             <Text style={[s.smallButtonText, s.smallButtonSecondaryText]}>Reset</Text>
           </TouchableOpacity>
         </View>
-        <Text style={s.label}>Bio</Text>
-        <TextInput
-          style={[s.input, s.bioInput]}
-          value={bio}
-          onChangeText={setBio}
-          multiline
-          placeholder="Tell people a bit about yourself"
-          placeholderTextColor={colors.mutedLight}
-          editable={!busy}
-          maxLength={BIO_MAX_LENGTH}
-        />
-        <Text style={s.charCount}>{bio.length}/{BIO_MAX_LENGTH}</Text>
-        <TouchableOpacity
-          style={[s.saveBtn, busy && s.saveBtnDisabled]}
-          onPress={handleSaveProfile}
-          disabled={busy}
-        >
-          {busy
-            ? <ActivityIndicator color="#fff" size="small" />
-            : <Text style={s.saveBtnText}>Save profile</Text>}
-        </TouchableOpacity>
+        <View style={s.profileBody}>
+          <Text style={s.label}>Bio</Text>
+          <TextInput
+            style={[s.input, s.bioInput]}
+            value={bio}
+            onChangeText={setBio}
+            multiline
+            placeholder="Tell people a bit about yourself"
+            placeholderTextColor={colors.mutedLight}
+            editable={!busy}
+            maxLength={BIO_MAX_LENGTH}
+          />
+          <Text style={s.charCount}>{bio.length}/{BIO_MAX_LENGTH}</Text>
+          <TouchableOpacity
+            style={[s.saveBtn, busy && s.saveBtnDisabled]}
+            onPress={handleSaveProfile}
+            disabled={busy}
+          >
+            {busy
+              ? <ActivityIndicator color="#fff" size="small" />
+              : <Text style={s.saveBtnText}>Save profile</Text>}
+          </TouchableOpacity>
+        </View>
       </View>
       <NotificationToggle />
 
@@ -234,7 +236,10 @@ const s = StyleSheet.create({
   },
   profileActions: {
     flexDirection: 'row', justifyContent: 'space-between', gap: spacing.sm,
-    paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.lg,
+    paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.sm,
+  },
+  profileBody: {
+    paddingHorizontal: spacing.lg, paddingBottom: spacing.lg,
   },
   smallButton: {
     flex: 1, paddingVertical: 12, borderRadius: radius.md,

@@ -22,7 +22,7 @@ export default function UserProfileSummary({ profilePictureUrl, onAvatarPress }:
     : (employee?.designation || '—');
 
   return (
-    <View style={s.card}>
+    <View style={s.container}>
       {/* Avatar row */}
       <View style={s.header}>
         <TouchableOpacity style={s.avatar} activeOpacity={onAvatarPress ? 0.7 : 1} onPress={onAvatarPress}>
@@ -72,10 +72,8 @@ const i = StyleSheet.create({
 });
 
 const s = StyleSheet.create({
-  card: {
-    backgroundColor: colors.card, borderRadius: radius.xl,
-    borderWidth: 1, borderColor: colors.border,
-    marginBottom: spacing.md, overflow: 'hidden',
+  container: {
+    backgroundColor: 'transparent',
   },
   header: {
     flexDirection: 'row', alignItems: 'center', gap: spacing.md,
