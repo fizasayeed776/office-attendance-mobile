@@ -11,7 +11,6 @@ export type Employee = {
   phone: string;
   username: string;
   shift_name?: string;
-  profile_picture?: string;
 };
 
 export type AdminUser = {
@@ -20,7 +19,6 @@ export type AdminUser = {
   name: string;
   staff_role: string;
   staff_department: string;
-  profile_picture?: string;
 };
 
 type AuthContextValue = {
@@ -31,8 +29,6 @@ type AuthContextValue = {
   setMustChangePassword: (value: boolean) => void;
   login: (username: string, password: string) => Promise<void>;
   logout: () => Promise<void>;
-  updateAdminUser: (updates: Partial<AdminUser>) => void;
-  updateEmployee: (updates: Partial<Employee>) => void;
 };
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined);
@@ -62,7 +58,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           name: data.name,
           staff_role: data.staff_role,
           staff_department: data.staff_department,
-          profile_picture: data.profile_picture,
         });
         setEmployee(null);
         setMustChangePassword(data.must_change_password === true);
@@ -76,7 +71,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           email: '',
           phone: '',
           username: data.username,
-          profile_picture: data.profile_picture,
         });
         setAdminUser(null);
         setMustChangePassword(false);
@@ -150,7 +144,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           name: data.name,
           staff_role: data.staff_role,
           staff_department: data.staff_department,
-          profile_picture: data.profile_picture,
         });
         console.log('[AUTH] AuthContext.login: CALLED setAdminUser');
         setEmployee(null);
@@ -169,8 +162,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
         console.log('[AUTH] AuthContext.login: CALLING setEmployee()');
         setEmployee({
-          ...data.employee,
-          profile_picture: data.employee.profile_picture,
+          pk: data.employee.pk,
+          employee_id: data.employee.employee_id,
+          name: data.employee.name,
+          department: data.employee.department,
+          designation: data.employee.designation,
+          email: data.employee.email,
+          phone: data.employee.phone,
+          username: data.employee.username,
+          shift_name: data.employee.shift_name,
         });
         console.log('[AUTH] AuthContext.login: CALLED setEmployee');
         setAdminUser(null);
@@ -223,14 +223,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setMustChangePassword(false);
   }, []);
 
-  const updateAdminUser = useCallback((updates: Partial<AdminUser>) => {
-    setAdminUser((current) => (current ? { ...current, ...updates } : current));
-  }, []);
-
-  const updateEmployee = useCallback((updates: Partial<Employee>) => {
-    setEmployee((current) => (current ? { ...current, ...updates } : current));
-  }, []);
-
   // ── Force-logout: used when the API interceptor sees a 401 on an
   // authenticated request (deleted employee, revoked token, etc.).
   // Skips the /api/mobile/logout/ network call since the token is already
@@ -259,7 +251,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, [forceLogout]);
 
   return (
-    <AuthContext.Provider value={{ loading, employee, adminUser, mustChangePassword, setMustChangePassword, login, logout, updateAdminUser, updateEmployee }}>
+    <AuthContext.Provider value={{ loading, employee, adminUser, mustChangePassword, setMustChangePassword, login, logout }}>
       {children}
     </AuthContext.Provider>
   );

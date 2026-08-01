@@ -1,19 +1,11 @@
 import React from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import { colors, spacing, radius, typography, fonts} from '../theme/colors';
+import { colors, spacing, radius, typography } from '../theme/colors';
 
-function initials(name?: string) {
-  if (!name) return '?';
-  return name.split(' ').filter(Boolean).slice(0, 2).map((w) => w[0]?.toUpperCase()).join('');
-}
+type UserProfileSummaryProps = {};
 
-type UserProfileSummaryProps = {
-  profilePictureUrl?: string;
-  onAvatarPress?: () => void;
-};
-
-export default function UserProfileSummary({ profilePictureUrl, onAvatarPress }: UserProfileSummaryProps) {
+export default function UserProfileSummary(_: UserProfileSummaryProps) {
   const { employee, adminUser } = useAuth();
   const user = adminUser ?? employee;
   const roleLabel = adminUser ? 'Role' : 'Designation';
@@ -23,15 +15,7 @@ export default function UserProfileSummary({ profilePictureUrl, onAvatarPress }:
 
   return (
     <View style={s.container}>
-      {/* Avatar row */}
       <View style={s.header}>
-        <TouchableOpacity style={s.avatar} activeOpacity={onAvatarPress ? 0.7 : 1} onPress={onAvatarPress}>
-          {profilePictureUrl ? (
-            <Image source={{ uri: profilePictureUrl }} style={s.avatarImage} />
-          ) : (
-            <Text style={s.avatarText}>{initials(user?.name)}</Text>
-          )}
-        </TouchableOpacity>
         <View style={s.meta}>
           <Text style={s.name}>{user?.name ?? 'Unknown user'}</Text>
           <Text style={s.username}>@{user?.username ?? 'unknown'}</Text>
@@ -43,7 +27,6 @@ export default function UserProfileSummary({ profilePictureUrl, onAvatarPress }:
         </View>
       </View>
 
-      {/* Info rows */}
       <View style={s.infoSection}>
         <InfoRow label={roleLabel} value={roleValue} />
         {adminUser && adminUser.staff_department ? (
@@ -93,6 +76,5 @@ const s = StyleSheet.create({
     borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: 2,
   },
   roleBadgeText: { fontSize: typography.xs, fontFamily: 'Inter_700Bold', color: colors.brand, letterSpacing: 0.4 },
-  avatarImage: { width: 60, height: 60, borderRadius: 30 },
   infoSection: { paddingHorizontal: spacing.lg, paddingVertical: spacing.xs },
 });
