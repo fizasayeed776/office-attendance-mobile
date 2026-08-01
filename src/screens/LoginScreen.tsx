@@ -8,7 +8,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useAuth } from '../context/AuthContext';
 import { API_BASE_URL } from '../api/client';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 const SHOW_SERVER_FOOTER =
   __DEV__ || API_BASE_URL.includes('localhost') || API_BASE_URL.includes('127.0.0.1');
@@ -209,8 +209,8 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     marginBottom: spacing.lg,
   },
-  logoLetter: { color: '#fff', fontSize: typography.display, fontWeight: '800' },
-  appName: { color: '#fff', fontSize: typography.xxxl, fontWeight: '800', letterSpacing: -0.5 },
+  logoLetter: { color: '#fff', fontSize: typography.display, fontFamily: 'Inter_800ExtraBold' },
+  appName: { color: '#fff', fontSize: typography.xxxl, fontFamily: 'Inter_800ExtraBold', letterSpacing: -0.5 },
   tagline: { color: colors.tabBarInactive, fontSize: typography.sm, marginTop: spacing.xs, letterSpacing: 0.3 },
 
   // ── Card
@@ -221,7 +221,7 @@ const styles = StyleSheet.create({
   },
   cardHeading: {
     fontSize: typography.xl,
-    fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
     color: colors.ink,
     marginBottom: spacing.lg,
     textAlign: 'center',
@@ -245,7 +245,7 @@ const styles = StyleSheet.create({
   fieldGroup: { marginBottom: spacing.md },
   fieldLabel: {
     fontSize: typography.sm,
-    fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
     color: colors.ink2,
     marginBottom: spacing.xs,
     letterSpacing: 0.2,
@@ -278,7 +278,7 @@ const styles = StyleSheet.create({
   },
   btnDisabled: { opacity: 0.7 },
   btnInner: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
-  btnText: { color: '#fff', fontWeight: '700', fontSize: typography.md, letterSpacing: 0.3 },
+  btnText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.md, letterSpacing: 0.3 },
 
   // ── Divider
   divider: {
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginBottom: spacing.md,
   },
-  setupBtnText: { color: colors.brand, fontWeight: '700', fontSize: typography.md },
+  setupBtnText: { color: colors.brand, fontFamily: 'Inter_700Bold', fontSize: typography.md },
 
   hint: {
     color: colors.muted,
@@ -313,10 +313,10 @@ const styles = StyleSheet.create({
   serverLabel: {
     fontSize: 9,
     color: colors.tabBarInactive,
-    fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
     textTransform: 'uppercase',
     letterSpacing: 1,
   },
   serverUrl: { fontSize: 10, color: colors.tabBarInactive, marginTop: spacing.xxs },
-  serverUrlBad: { color: colors.danger, fontWeight: '700' },
+  serverUrlBad: { color: colors.danger, fontFamily: 'Inter_700Bold' },
 });

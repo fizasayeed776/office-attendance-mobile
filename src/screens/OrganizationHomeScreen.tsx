@@ -2,7 +2,7 @@ import { ComponentProps, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import api from '../api/client';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 export default function OrganizationHomeScreen({ navigation }: any) {
   const [loading, setLoading] = useState(true);
@@ -64,7 +64,7 @@ export default function OrganizationHomeScreen({ navigation }: any) {
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   content: { padding: spacing.lg, paddingBottom: spacing.xxxl },
-  heading: { fontSize: typography.xxl, fontWeight: '800', color: colors.ink, marginBottom: spacing.xs },
+  heading: { fontSize: typography.xxl, fontFamily: 'Inter_800ExtraBold', color: colors.ink, marginBottom: spacing.xs },
   sub: { color: colors.muted, fontSize: typography.base, lineHeight: 20, marginBottom: spacing.xl },
   errorBanner: { backgroundColor: colors.dangerSoft, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.md, borderLeftWidth: 3, borderLeftColor: colors.danger },
   errorText: { color: colors.danger, fontSize: typography.sm },
@@ -73,10 +73,10 @@ const s = StyleSheet.create({
   cardLeft: { flex: 1, flexDirection: 'row', alignItems: 'flex-start', gap: spacing.md },
   iconWrap: { width: 44, height: 44, borderRadius: radius.lg, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
   cardText: { flex: 1 },
-  cardTitle: { fontSize: typography.lg, fontWeight: '700', color: colors.ink, marginBottom: spacing.xs },
+  cardTitle: { fontSize: typography.lg, fontFamily: 'Inter_700Bold', color: colors.ink, marginBottom: spacing.xs },
   cardHint: { fontSize: typography.sm, color: colors.muted, lineHeight: 19 },
   cardRight: { alignItems: 'flex-end', gap: 2, marginLeft: spacing.md },
-  cardCount: { fontSize: typography.xxl, fontWeight: '800', color: colors.brand },
-  cardCountLabel: { fontSize: typography.xs, color: colors.muted, fontWeight: '600' },
+  cardCount: { fontSize: typography.xxl, fontFamily: 'Inter_800ExtraBold', color: colors.brand },
+  cardCountLabel: { fontSize: typography.xs, color: colors.muted, fontFamily: 'Inter_600SemiBold' },
   chevron: { fontSize: 22, color: colors.muted, marginTop: 2 },
 });

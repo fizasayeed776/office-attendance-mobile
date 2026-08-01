@@ -7,7 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../api/client';
 
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 type Correction = {
   pk: number; date: string; attendance_type_label: string;
@@ -30,7 +30,7 @@ function StatusChip({ status }: { status: string }) {
 }
 const chipS = StyleSheet.create({
   wrap: { paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.pill },
-  text: { fontSize: typography.xs, fontWeight: '700' },
+  text: { fontSize: typography.xs, fontFamily: 'Inter_700Bold' },
 });
 
 export default function CorrectionsScreen({ route }: any) {
@@ -201,10 +201,10 @@ const modal = StyleSheet.create({
     width: 36, height: 4, borderRadius: 2,
     backgroundColor: colors.borderStrong, alignSelf: 'center', marginBottom: spacing.lg,
   },
-  title: { fontSize: typography.xl, fontWeight: '700', color: colors.ink, marginBottom: spacing.xs },
+  title: { fontSize: typography.xl, fontFamily: 'Inter_700Bold', color: colors.ink, marginBottom: spacing.xs },
   subtitle: { fontSize: typography.sm, color: colors.muted, marginBottom: spacing.lg, lineHeight: 19 },
   label: {
-    fontSize: typography.sm, fontWeight: '600', color: colors.ink2,
+    fontSize: typography.sm, fontFamily: 'Inter_600SemiBold', color: colors.ink2,
     marginBottom: spacing.xs, marginTop: spacing.md, letterSpacing: 0.2,
   },
   input: {
@@ -220,7 +220,7 @@ const modal = StyleSheet.create({
     backgroundColor: colors.bg,
   },
   typeBtnActive: { backgroundColor: colors.brand, borderColor: colors.brand },
-  typeBtnText: { fontSize: typography.sm, fontWeight: '600', color: colors.ink2 },
+  typeBtnText: { fontSize: typography.sm, fontFamily: 'Inter_600SemiBold', color: colors.ink2 },
   typeBtnTextActive: { color: '#fff' },
   errorWrap: {
     backgroundColor: colors.dangerSoft, borderRadius: radius.md,
@@ -233,13 +233,13 @@ const modal = StyleSheet.create({
     flex: 1, paddingVertical: 14, borderRadius: radius.md,
     alignItems: 'center', borderWidth: 1.5, borderColor: colors.border,
   },
-  cancelText: { color: colors.ink2, fontWeight: '700' },
+  cancelText: { color: colors.ink2, fontFamily: 'Inter_700Bold' },
   submitBtn: {
     flex: 1, paddingVertical: 14, borderRadius: radius.md,
     alignItems: 'center', backgroundColor: colors.brand,
   },
   submitBtnDisabled: { opacity: 0.7 },
-  submitText: { color: '#fff', fontWeight: '700' },
+  submitText: { color: '#fff', fontFamily: 'Inter_700Bold' },
 });
 
 const styles = StyleSheet.create({
@@ -247,7 +247,7 @@ const styles = StyleSheet.create({
   list: { padding: spacing.lg, paddingBottom: 100 },
 
   empty: { paddingTop: 80, alignItems: 'center', gap: spacing.sm },
-  emptyTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink },
+  emptyTitle: { fontSize: typography.xl, fontFamily: 'Inter_700Bold', color: colors.ink },
   emptyBody: { fontSize: typography.base, color: colors.muted, textAlign: 'center', paddingHorizontal: spacing.xl },
 
   card: {
@@ -259,7 +259,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row', justifyContent: 'space-between',
     alignItems: 'flex-start', marginBottom: spacing.md,
   },
-  cardType: { fontSize: typography.md, fontWeight: '700', color: colors.ink },
+  cardType: { fontSize: typography.md, fontFamily: 'Inter_700Bold', color: colors.ink },
   cardDate: { fontSize: typography.sm, color: colors.muted, marginTop: 2 },
 
   timeRow: {
@@ -267,15 +267,15 @@ const styles = StyleSheet.create({
     backgroundColor: colors.bgDeep, borderRadius: radius.md,
     paddingHorizontal: spacing.md, paddingVertical: spacing.sm, marginBottom: spacing.sm,
   },
-  timeLabel: { fontSize: typography.xs, fontWeight: '700', color: colors.muted, letterSpacing: 0.4 },
-  timeValue: { fontSize: typography.md, fontWeight: '700', color: colors.brand },
+  timeLabel: { fontSize: typography.xs, fontFamily: 'Inter_700Bold', color: colors.muted, letterSpacing: 0.4 },
+  timeValue: { fontSize: typography.md, fontFamily: 'Inter_700Bold', color: colors.brand },
 
   reason: { fontSize: typography.sm, color: colors.muted, lineHeight: 18 },
   commentWrap: {
     marginTop: spacing.sm, backgroundColor: colors.bgDeep,
     borderRadius: radius.md, padding: spacing.sm,
   },
-  commentLabel: { fontSize: typography.xs, fontWeight: '700', color: colors.muted, marginBottom: 2 },
+  commentLabel: { fontSize: typography.xs, fontFamily: 'Inter_700Bold', color: colors.muted, marginBottom: 2 },
   commentText: { fontSize: typography.sm, color: colors.ink2 },
 
   fabWrap: {
@@ -285,5 +285,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brand, borderRadius: radius.lg,
     paddingVertical: 15, alignItems: 'center',
   },
-  fabText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
+  fabText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.md },
 });

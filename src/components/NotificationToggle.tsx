@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { View, Text, StyleSheet, Switch, ActivityIndicator, Alert } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { registerForPushNotifications } from '../notifications';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 export default function NotificationToggle() {
   const [enabled, setEnabled] = useState(false);
@@ -68,7 +68,7 @@ const s = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   meta: { flex: 1 },
-  title: { fontSize: typography.md, fontWeight: '700', color: colors.ink },
+  title: { fontSize: typography.md, fontFamily: 'Inter_700Bold', color: colors.ink },
   hint: { fontSize: typography.sm, color: colors.muted, marginTop: spacing.xxs, lineHeight: 18 },
   toggle: { marginLeft: spacing.sm },
 });

@@ -1,6 +1,6 @@
 import { View, Text, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 export default function PlaceholderScreen({ route }: { route: any }) {
   return (
@@ -26,6 +26,6 @@ const s = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     marginBottom: spacing.sm,
   },
-  title: { fontSize: typography.xxl, fontWeight: '700', color: colors.ink, textAlign: 'center' },
+  title: { fontSize: typography.xxl, fontFamily: 'Inter_700Bold', color: colors.ink, textAlign: 'center' },
   body:  { fontSize: typography.base, color: colors.muted, textAlign: 'center', lineHeight: 21 },
 });

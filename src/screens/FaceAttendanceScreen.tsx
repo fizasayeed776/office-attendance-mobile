@@ -7,7 +7,7 @@ import { CameraView, useCameraPermissions } from 'expo-camera';
 import * as Location from 'expo-location';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import api from '../api/client';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 import { Ionicons } from '@expo/vector-icons';
 
@@ -165,10 +165,10 @@ const CORNER_WIDTH = 3;
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.sidebar, padding: spacing.lg },
   center: { flex: 1, backgroundColor: colors.bg, alignItems: 'center', justifyContent: 'center', padding: spacing.xl, gap: spacing.md },
-  permTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink, textAlign: 'center' },
+  permTitle: { fontSize: typography.xl, fontFamily: 'Inter_700Bold', color: colors.ink, textAlign: 'center' },
   permBody:  { fontSize: typography.base, color: colors.muted, textAlign: 'center', lineHeight: 21 },
   permBtn:   { backgroundColor: colors.brand, borderRadius: radius.md, paddingVertical: 13, paddingHorizontal: spacing.xl },
-  permBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
+  permBtnText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.md },
 
   // ── Camera
   cameraWrap: {
@@ -199,7 +199,7 @@ const s = StyleSheet.create({
     backgroundColor: 'rgba(17,19,42,0.55)',
     alignItems: 'center', justifyContent: 'center', gap: spacing.md,
   },
-  scanningText: { color: '#fff', fontWeight: '700', fontSize: typography.lg },
+  scanningText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.lg },
 
   // ── Mode selector
   modeRow: { flexDirection: 'row', gap: spacing.sm, marginBottom: spacing.md },
@@ -210,7 +210,7 @@ const s = StyleSheet.create({
     borderWidth: 1.5, borderColor: colors.sidebarBorder,
   },
   modeBtnActive: { backgroundColor: colors.brand, borderColor: colors.brand },
-  modeBtnText: { fontSize: typography.sm, fontWeight: '600', color: colors.tabBarInactive },
+  modeBtnText: { fontSize: typography.sm, fontFamily: 'Inter_600SemiBold', color: colors.tabBarInactive },
   modeBtnTextActive: { color: '#fff' },
 
   // ── Result box
@@ -220,8 +220,8 @@ const s = StyleSheet.create({
   },
   resultBoxOk: { backgroundColor: colors.successSoft },
   resultBoxFail: { backgroundColor: colors.dangerSoft },
-  resultIcon: { fontSize: typography.lg, fontWeight: '700', marginTop: 1 },
-  resultText: { flex: 1, fontSize: typography.base, fontWeight: '600', lineHeight: 20 },
+  resultIcon: { fontSize: typography.lg, fontFamily: 'Inter_700Bold', marginTop: 1 },
+  resultText: { flex: 1, fontSize: typography.base, fontFamily: 'Inter_600SemiBold', lineHeight: 20 },
 
   // ── Capture button
   captureBtn: {
@@ -229,5 +229,5 @@ const s = StyleSheet.create({
     paddingVertical: 16, alignItems: 'center',
   },
   captureBtnBusy: { opacity: 0.75 },
-  captureBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.lg, letterSpacing: 0.3 },
+  captureBtnText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.lg, letterSpacing: 0.3 },
 });

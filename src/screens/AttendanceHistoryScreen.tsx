@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { useFocusEffect } from '@react-navigation/native';
 import api from '../api/client';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 type AttendanceRow = {
   date: string; check_in: string | null; check_out: string | null;
@@ -27,7 +27,7 @@ function Badge({ text, color, bg }: { text: string; color: string; bg: string })
 }
 const badgeS = StyleSheet.create({
   wrap: { paddingHorizontal: spacing.sm, paddingVertical: 3, borderRadius: radius.pill },
-  text: { fontSize: typography.xs, fontWeight: '700' },
+  text: { fontSize: typography.xs, fontFamily: 'Inter_700Bold' },
 });
 
 const SUMMARY_ITEMS = [
@@ -171,7 +171,7 @@ const styles = StyleSheet.create({
     borderWidth: 1.5, borderColor: colors.border,
   },
   tabActive: { backgroundColor: colors.brand, borderColor: colors.brand },
-  tabText: { fontSize: typography.sm, fontWeight: '600', color: colors.ink2 },
+  tabText: { fontSize: typography.sm, fontFamily: 'Inter_600SemiBold', color: colors.ink2 },
   tabTextActive: { color: '#fff' },
 
   // ── Summary
@@ -186,10 +186,10 @@ const styles = StyleSheet.create({
     
   },
   scoreLabel: {
-    fontSize: typography.xs, fontWeight: '700',
+    fontSize: typography.xs, fontFamily: 'Inter_700Bold',
     color: colors.muted, letterSpacing: 0.6,
   },
-  scoreValue: { fontSize: 52, fontWeight: '800', lineHeight: 60, marginVertical: spacing.xs },
+  scoreValue: { fontSize: 52, fontFamily: 'Inter_800ExtraBold', lineHeight: 60, marginVertical: spacing.xs },
   scoreSubLabel: { fontSize: typography.sm, color: colors.muted },
 
   statsGrid: {
@@ -205,8 +205,8 @@ const styles = StyleSheet.create({
     minWidth: '30%',
     
   },
-  statNum: { fontSize: typography.xxl, fontWeight: '800' },
-  statLabel: { fontSize: typography.xs, color: colors.muted, fontWeight: '600', marginTop: 2, textAlign: 'center' },
+  statNum: { fontSize: typography.xxl, fontFamily: 'Inter_800ExtraBold' },
+  statLabel: { fontSize: typography.xs, color: colors.muted, fontFamily: 'Inter_600SemiBold', marginTop: 2, textAlign: 'center' },
 
   // ── History list
   list: { padding: spacing.lg, paddingBottom: spacing.xxxl },
@@ -224,11 +224,11 @@ const styles = StyleSheet.create({
     
   },
   rowLeft: { gap: spacing.xs },
-  rowDate: { fontSize: typography.base, fontWeight: '700', color: colors.ink },
+  rowDate: { fontSize: typography.base, fontFamily: 'Inter_700Bold', color: colors.ink },
   timeRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.md },
   timeItem: { alignItems: 'center', gap: 2 },
-  timeItemLabel: { fontSize: typography.xs, fontWeight: '700', color: colors.muted, letterSpacing: 0.4 },
-  timeItemValue: { fontSize: typography.sm, fontWeight: '600', color: colors.ink2 },
+  timeItemLabel: { fontSize: typography.xs, fontFamily: 'Inter_700Bold', color: colors.muted, letterSpacing: 0.4 },
+  timeItemValue: { fontSize: typography.sm, fontFamily: 'Inter_600SemiBold', color: colors.ink2 },
   timeSep: { width: 1, height: 20, backgroundColor: colors.border },
 
   rowRight: { gap: spacing.xs, alignItems: 'flex-end' },

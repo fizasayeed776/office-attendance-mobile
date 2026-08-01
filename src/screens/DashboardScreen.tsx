@@ -6,7 +6,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import api from '../api/client';
 import { useAuth } from '../context/AuthContext';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 import { Ionicons } from '@expo/vector-icons';
 
@@ -248,10 +248,10 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brand,
     alignItems: 'center', justifyContent: 'center',
   },
-  avatarText: { color: '#fff', fontSize: typography.lg, fontWeight: '700' },
+  avatarText: { color: '#fff', fontSize: typography.lg, fontFamily: 'Inter_700Bold' },
   profileMeta: { flex: 1 },
-  greeting: { fontSize: typography.sm, color: colors.muted, fontWeight: '500' },
-  profileName: { fontSize: typography.xl, fontWeight: '800', color: colors.ink },
+  greeting: { fontSize: typography.sm, color: colors.muted, fontFamily: 'Inter_500Medium' },
+  profileName: { fontSize: typography.xl, fontFamily: 'Inter_800ExtraBold', color: colors.ink },
   profileSub: { fontSize: typography.sm, color: colors.muted, marginTop: 2 },
 
   // ── Error
@@ -280,12 +280,12 @@ const styles = StyleSheet.create({
   },
   heroLabel: {
     fontSize: typography.xs,
-    fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
     color: colors.muted,
     letterSpacing: 0.6,
   },
-  heroDate: { fontSize: typography.sm, color: colors.muted, fontWeight: '500' },
-  heroStatus: { fontSize: typography.xl, fontWeight: '700', marginBottom: spacing.sm },
+  heroDate: { fontSize: typography.sm, color: colors.muted, fontFamily: 'Inter_500Medium' },
+  heroStatus: { fontSize: typography.xl, fontFamily: 'Inter_700Bold', marginBottom: spacing.sm },
   lateBadge: {
     alignSelf: 'flex-start',
     backgroundColor: colors.warnSoft,
@@ -294,7 +294,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.xxs,
     marginBottom: spacing.sm,
   },
-  lateBadgeText: { fontSize: typography.xs, color: colors.warn, fontWeight: '700' },
+  lateBadgeText: { fontSize: typography.xs, color: colors.warn, fontFamily: 'Inter_700Bold' },
   heroTimeline: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -303,7 +303,7 @@ const styles = StyleSheet.create({
   },
   heroTimelineItem: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   timelineDot: { width: 8, height: 8, borderRadius: 4 },
-  heroTimelineText: { fontSize: typography.sm, color: colors.ink2, fontWeight: '600' },
+  heroTimelineText: { fontSize: typography.sm, color: colors.ink2, fontFamily: 'Inter_600SemiBold' },
   heroTimelineLine: { flex: 1, height: 1, backgroundColor: colors.borderStrong },
 
   // ── Alerts
@@ -316,13 +316,13 @@ const styles = StyleSheet.create({
     borderColor: colors.warn + '44',
     gap: spacing.xs,
   },
-  alertTitle: { fontSize: typography.sm, fontWeight: '700', color: colors.warnDark },
+  alertTitle: { fontSize: typography.sm, fontFamily: 'Inter_700Bold', color: colors.warnDark },
   alertItem: { fontSize: typography.base, color: colors.ink2 },
 
   // ── Section title
   sectionTitle: {
     fontSize: typography.lg,
-    fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
     color: colors.ink,
     marginBottom: spacing.md,
   },
@@ -348,7 +348,7 @@ const styles = StyleSheet.create({
     borderColor: colors.brand,
   },
   actionIcon: { fontSize: 22, marginBottom: spacing.xs },
-  actionLabel: { fontSize: typography.md, fontWeight: '700', color: colors.ink },
+  actionLabel: { fontSize: typography.md, fontFamily: 'Inter_700Bold', color: colors.ink },
   actionLabelPrimary: { color: '#fff' },
   actionSub: { fontSize: typography.xs, color: colors.muted },
   actionSubPrimary: { color: 'rgba(255,255,255,0.75)' },
@@ -371,13 +371,13 @@ const styles = StyleSheet.create({
   balanceType: {
     fontSize: typography.xs,
     color: colors.muted,
-    fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
     marginBottom: spacing.sm,
     lineHeight: 16,
   },
   balanceRow: { flexDirection: 'row', alignItems: 'baseline', gap: spacing.xs, marginBottom: spacing.xs },
-  balanceValue: { fontSize: typography.xxl, fontWeight: '800', color: colors.ink },
-  balanceTotal: { fontSize: typography.sm, color: colors.muted, fontWeight: '500' },
+  balanceValue: { fontSize: typography.xxl, fontFamily: 'Inter_800ExtraBold', color: colors.ink },
+  balanceTotal: { fontSize: typography.sm, color: colors.muted, fontFamily: 'Inter_500Medium' },
   progressTrack: {
     height: 4,
     backgroundColor: colors.border,

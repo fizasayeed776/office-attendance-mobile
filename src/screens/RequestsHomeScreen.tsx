@@ -2,7 +2,7 @@ import { ComponentProps, useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, ScrollView } from 'react-native';
 import api from '../api/client';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 export default function RequestsHomeScreen({ navigation }: any) {
   const [loading, setLoading]         = useState(true);
@@ -83,7 +83,7 @@ export default function RequestsHomeScreen({ navigation }: any) {
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   content: { padding: spacing.lg, paddingBottom: spacing.xxxl },
-  heading: { fontSize: typography.xxl, fontWeight: '800', color: colors.ink, marginBottom: spacing.xs },
+  heading: { fontSize: typography.xxl, fontFamily: 'Inter_800ExtraBold', color: colors.ink, marginBottom: spacing.xs },
   sub: { color: colors.muted, fontSize: typography.base, lineHeight: 20, marginBottom: spacing.xl },
   errorBanner: { backgroundColor: colors.dangerSoft, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.md, borderLeftWidth: 3, borderLeftColor: colors.danger },
   errorText: { color: colors.danger, fontSize: typography.sm },
@@ -94,11 +94,11 @@ const s = StyleSheet.create({
   iconWrapAlert: { backgroundColor: colors.warnSoft },
   cardText: { flex: 1 },
   cardTitleRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginBottom: spacing.xs, flexWrap: 'wrap' },
-  cardTitle: { fontSize: typography.lg, fontWeight: '700', color: colors.ink },
+  cardTitle: { fontSize: typography.lg, fontFamily: 'Inter_700Bold', color: colors.ink },
   pendingBadge: { backgroundColor: colors.warnSoft, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: 2 },
-  pendingBadgeText: { fontSize: typography.xs, fontWeight: '700', color: colors.warn },
+  pendingBadgeText: { fontSize: typography.xs, fontFamily: 'Inter_700Bold', color: colors.warn },
   cardHint: { fontSize: typography.sm, color: colors.muted, lineHeight: 19 },
   cardRight: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm, marginLeft: spacing.md },
-  cardCount: { fontSize: typography.xxl, fontWeight: '800', color: colors.brand },
+  cardCount: { fontSize: typography.xxl, fontFamily: 'Inter_800ExtraBold', color: colors.brand },
   chevron: { fontSize: 22, color: colors.muted },
 });

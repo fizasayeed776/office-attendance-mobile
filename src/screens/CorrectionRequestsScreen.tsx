@@ -7,7 +7,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../api/client';
 
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 type CorrectionRequest = {
   pk: number; employee_name: string; department: string;
@@ -182,7 +182,7 @@ const m = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'flex-end' },
   sheet: { backgroundColor: colors.card, borderTopLeftRadius: radius.xxl, borderTopRightRadius: radius.xxl, padding: spacing.xl },
   handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.borderStrong, alignSelf: 'center', marginBottom: spacing.lg },
-  title: { fontSize: typography.xl, fontWeight: '700', color: colors.ink, marginBottom: spacing.xs },
+  title: { fontSize: typography.xl, fontFamily: 'Inter_700Bold', color: colors.ink, marginBottom: spacing.xs },
   subtitle: { fontSize: typography.sm, color: colors.muted, marginBottom: spacing.md },
   input: { backgroundColor: colors.bg, borderWidth: 1.5, borderColor: colors.border, borderRadius: radius.md, paddingHorizontal: spacing.md, paddingVertical: 12, fontSize: typography.md, color: colors.ink },
   textArea: { minHeight: 88, textAlignVertical: 'top' },
@@ -190,40 +190,40 @@ const m = StyleSheet.create({
   errText: { color: colors.danger, fontSize: typography.sm },
   actions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.lg },
   cancelBtn: { flex: 1, paddingVertical: 14, borderRadius: radius.md, alignItems: 'center', borderWidth: 1.5, borderColor: colors.border },
-  cancelText: { color: colors.ink2, fontWeight: '700' },
+  cancelText: { color: colors.ink2, fontFamily: 'Inter_700Bold' },
   submitBtn: { flex: 1, paddingVertical: 14, borderRadius: radius.md, alignItems: 'center', backgroundColor: colors.danger },
   submitDisabled: { opacity: 0.5 },
-  submitText: { color: '#fff', fontWeight: '700' },
+  submitText: { color: '#fff', fontFamily: 'Inter_700Bold' },
 });
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   list: { padding: spacing.lg, paddingBottom: spacing.xxxl },
   loadingWrap: { flex: 1, alignItems: 'center', justifyContent: 'center' },
-  heading: { fontSize: typography.xxl, fontWeight: '800', color: colors.ink, marginBottom: spacing.lg },
+  heading: { fontSize: typography.xxl, fontFamily: 'Inter_800ExtraBold', color: colors.ink, marginBottom: spacing.lg },
   errorBar: { color: colors.danger, padding: spacing.lg },
   empty: { paddingTop: 60, alignItems: 'center', gap: spacing.sm },
-  emptyTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink },
+  emptyTitle: { fontSize: typography.xl, fontFamily: 'Inter_700Bold', color: colors.ink },
   chip: { paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.pill },
-  chipText: { fontSize: typography.xs, fontWeight: '700' },
+  chipText: { fontSize: typography.xs, fontFamily: 'Inter_700Bold' },
   card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.md },
   avatarWrap: { width: 40, height: 40, borderRadius: 20, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
-  avatarText: { fontSize: 14, fontWeight: '700', color: colors.brand },
+  avatarText: { fontSize: 14, fontFamily: 'Inter_700Bold', color: colors.brand },
   cardMeta: { flex: 1 },
-  cardName: { fontSize: typography.md, fontWeight: '700', color: colors.ink },
+  cardName: { fontSize: typography.md, fontFamily: 'Inter_700Bold', color: colors.ink },
   cardSub: { fontSize: typography.sm, color: colors.muted, marginTop: 2 },
   detailGrid: { flexDirection: 'row', gap: spacing.sm, backgroundColor: colors.bgDeep, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.sm },
   detailCell: { flex: 1 },
-  detailLabel: { fontSize: typography.xs, fontWeight: '700', color: colors.muted, letterSpacing: 0.4, marginBottom: 2 },
-  detailValue: { fontSize: typography.sm, fontWeight: '700', color: colors.ink },
+  detailLabel: { fontSize: typography.xs, fontFamily: 'Inter_700Bold', color: colors.muted, letterSpacing: 0.4, marginBottom: 2 },
+  detailValue: { fontSize: typography.sm, fontFamily: 'Inter_700Bold', color: colors.ink },
   reason: { fontSize: typography.sm, color: colors.muted, marginBottom: spacing.sm },
   commentWrap: { backgroundColor: colors.bgDeep, borderRadius: radius.md, padding: spacing.sm, marginTop: spacing.xs },
-  commentLabel: { fontSize: typography.xs, fontWeight: '700', color: colors.muted, marginBottom: 2 },
+  commentLabel: { fontSize: typography.xs, fontFamily: 'Inter_700Bold', color: colors.muted, marginBottom: 2 },
   commentText: { fontSize: typography.sm, color: colors.ink2 },
   actionRow: { flexDirection: 'row', gap: spacing.sm, marginTop: spacing.md, borderTopWidth: 1, borderTopColor: colors.divider, paddingTop: spacing.md },
   approveBtn: { flex: 1, paddingVertical: 11, borderRadius: radius.md, alignItems: 'center', backgroundColor: colors.successSoft, borderWidth: 1, borderColor: colors.success },
-  approveBtnText: { color: colors.success, fontWeight: '700', fontSize: typography.sm },
+  approveBtnText: { color: colors.success, fontFamily: 'Inter_700Bold', fontSize: typography.sm },
   rejectBtn: { flex: 1, paddingVertical: 11, borderRadius: radius.md, alignItems: 'center', backgroundColor: colors.dangerSoft, borderWidth: 1, borderColor: colors.danger },
-  rejectBtnText: { color: colors.danger, fontWeight: '700', fontSize: typography.sm },
+  rejectBtnText: { color: colors.danger, fontFamily: 'Inter_700Bold', fontSize: typography.sm },
 });

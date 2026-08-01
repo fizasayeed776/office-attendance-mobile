@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 import api from '../api/client';
 
 type Step = 'verify' | 'credentials';
@@ -283,7 +283,7 @@ const fieldStyles = StyleSheet.create({
   wrap: { marginBottom: spacing.md },
   label: {
     fontSize: typography.sm,
-    fontWeight: '600',
+    fontFamily: 'Inter_600SemiBold',
     color: colors.ink2,
     marginBottom: spacing.xs,
     letterSpacing: 0.2,
@@ -312,9 +312,9 @@ const styles = StyleSheet.create({
   },
   stepDotActive: { backgroundColor: colors.brand },
   stepDotDone: { backgroundColor: colors.success },
-  stepDotText: { fontSize: typography.sm, fontWeight: '700', color: colors.muted },
+  stepDotText: { fontSize: typography.sm, fontFamily: 'Inter_700Bold', color: colors.muted },
   stepDotTextActive: { color: '#fff' },
-  stepLabel: { fontSize: typography.xs, color: colors.muted, fontWeight: '600' },
+  stepLabel: { fontSize: typography.xs, color: colors.muted, fontFamily: 'Inter_600SemiBold' },
   stepLabelActive: { color: colors.brand },
   stepConnector: {
     flex: 1,
@@ -333,7 +333,7 @@ const styles = StyleSheet.create({
   },
   cardHeading: {
     fontSize: typography.xxl,
-    fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
     color: colors.ink,
     marginBottom: spacing.xs,
   },
@@ -390,8 +390,8 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   btnDisabled: { opacity: 0.7 },
-  btnText: { color: '#fff', fontWeight: '700', fontSize: typography.md, letterSpacing: 0.3 },
+  btnText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.md, letterSpacing: 0.3 },
 
   backBtn: { marginTop: spacing.lg, flexDirection: 'row', alignItems: 'center', justifyContent: 'center', gap: 2 },
-  backBtnText: { color: colors.brand, fontWeight: '600', fontSize: typography.base },
+  backBtnText: { color: colors.brand, fontFamily: 'Inter_600SemiBold', fontSize: typography.base },
 });

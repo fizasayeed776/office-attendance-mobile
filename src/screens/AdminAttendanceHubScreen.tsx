@@ -1,5 +1,5 @@
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 import { Ionicons } from '@expo/vector-icons';
 
@@ -47,7 +47,7 @@ export default function AdminAttendanceHubScreen({ navigation }: any) {
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg, padding: spacing.lg },
-  heading: { fontSize: typography.xxl, fontWeight: '800', color: colors.ink, marginBottom: spacing.xs },
+  heading: { fontSize: typography.xxl, fontFamily: 'Inter_800ExtraBold', color: colors.ink, marginBottom: spacing.xs },
   sub: { color: colors.muted, fontSize: typography.base, lineHeight: 20, marginBottom: spacing.xl },
   card: {
     backgroundColor: colors.card, borderRadius: radius.xl,
@@ -57,7 +57,7 @@ const s = StyleSheet.create({
   },
   iconWrap: { width: 52, height: 52, borderRadius: radius.lg, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
   cardBody: { flex: 1 },
-  cardTitle: { fontSize: typography.lg, fontWeight: '700', color: colors.ink, marginBottom: spacing.xs },
+  cardTitle: { fontSize: typography.lg, fontFamily: 'Inter_700Bold', color: colors.ink, marginBottom: spacing.xs },
   cardHint: { fontSize: typography.sm, color: colors.muted, lineHeight: 19 },
   chevron: { fontSize: 24, color: colors.muted },
 });

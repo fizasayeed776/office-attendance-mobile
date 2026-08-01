@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ActivityIndicator, Alert, TextInput, Modal, ScrollView } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../api/client';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 export default function ShiftsScreen() {
   const [loading, setLoading] = useState(true);
@@ -173,8 +173,8 @@ const m = StyleSheet.create({
   overlay: { flex: 1, backgroundColor: colors.overlay, justifyContent: 'center', padding: spacing.lg },
   sheet: { backgroundColor: colors.card, borderRadius: radius.xxl, padding: spacing.xl },
   handle: { width: 36, height: 4, borderRadius: 2, backgroundColor: colors.borderStrong, alignSelf: 'center', marginBottom: spacing.lg },
-  title: { fontSize: typography.xl, fontWeight: '700', color: colors.ink, marginBottom: spacing.md },
-  label: { fontSize: typography.sm, fontWeight: '600', color: colors.ink2, marginBottom: spacing.xs, marginTop: spacing.md },
+  title: { fontSize: typography.xl, fontFamily: 'Inter_700Bold', color: colors.ink, marginBottom: spacing.md },
+  label: { fontSize: typography.sm, fontFamily: 'Inter_600SemiBold', color: colors.ink2, marginBottom: spacing.xs, marginTop: spacing.md },
   input: { backgroundColor: colors.bg, borderWidth: 1.5, borderColor: colors.border, borderRadius: radius.md, paddingHorizontal: spacing.md, paddingVertical: 12, fontSize: typography.md, color: colors.ink },
   timeRow: { flexDirection: 'row', gap: spacing.md },
   timeField: { flex: 1 },
@@ -182,40 +182,40 @@ const m = StyleSheet.create({
   errText: { color: colors.danger, fontSize: typography.sm },
   actions: { flexDirection: 'row', gap: spacing.md, marginTop: spacing.lg },
   cancelBtn: { flex: 1, paddingVertical: 14, borderRadius: radius.md, alignItems: 'center', borderWidth: 1.5, borderColor: colors.border },
-  cancelText: { color: colors.ink2, fontWeight: '700' },
+  cancelText: { color: colors.ink2, fontFamily: 'Inter_700Bold' },
   saveBtn: { flex: 1, paddingVertical: 14, borderRadius: radius.md, alignItems: 'center', backgroundColor: colors.brand },
   saveBtnDisabled: { opacity: 0.7 },
-  saveText: { color: '#fff', fontWeight: '700' },
+  saveText: { color: '#fff', fontFamily: 'Inter_700Bold' },
 });
 
 const s = StyleSheet.create({
   screen: { flex: 1, backgroundColor: colors.bg },
   toolbar: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', padding: spacing.lg },
-  heading: { fontSize: typography.xxl, fontWeight: '800', color: colors.ink },
+  heading: { fontSize: typography.xxl, fontFamily: 'Inter_800ExtraBold', color: colors.ink },
   addBtn: { backgroundColor: colors.brand, borderRadius: radius.md, paddingVertical: spacing.sm, paddingHorizontal: spacing.md },
-  addBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.sm },
+  addBtnText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.sm },
   errorBanner: { backgroundColor: colors.dangerSoft, borderRadius: radius.md, padding: spacing.md, marginHorizontal: spacing.lg, marginBottom: spacing.sm, borderLeftWidth: 3, borderLeftColor: colors.danger },
   errorText: { color: colors.danger, fontSize: typography.sm },
   loadingWrap: { paddingTop: 60, alignItems: 'center' },
   list: { paddingHorizontal: spacing.lg, paddingBottom: spacing.xxxl },
   empty: { paddingTop: 60, alignItems: 'center', gap: spacing.sm },
   emptyIconWrap: { width: 72, height: 72, borderRadius: radius.xxl, backgroundColor: colors.bgDeep, alignItems: 'center', justifyContent: 'center' },
-  emptyTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink },
+  emptyTitle: { fontSize: typography.xl, fontFamily: 'Inter_700Bold', color: colors.ink },
   card: { backgroundColor: colors.card, borderRadius: radius.xl, padding: spacing.lg, marginBottom: spacing.md, borderWidth: 1, borderColor: colors.border },
   cardTop: { flexDirection: 'row', alignItems: 'center', gap: spacing.md, marginBottom: spacing.md },
   iconWrap: { width: 44, height: 44, borderRadius: radius.lg, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
   cardMeta: { flex: 1, gap: spacing.xs },
-  cardTitle: { fontSize: typography.lg, fontWeight: '700', color: colors.ink },
+  cardTitle: { fontSize: typography.lg, fontFamily: 'Inter_700Bold', color: colors.ink },
   countBadge: { alignSelf: 'flex-start', backgroundColor: colors.bgDeep, borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: 2 },
-  countText: { fontSize: typography.xs, color: colors.muted, fontWeight: '600' },
+  countText: { fontSize: typography.xs, color: colors.muted, fontFamily: 'Inter_600SemiBold' },
   timesRow: { flexDirection: 'row', backgroundColor: colors.bgDeep, borderRadius: radius.md, padding: spacing.md, marginBottom: spacing.md, alignItems: 'center' },
   timeItem: { flex: 1, alignItems: 'center' },
-  timeLabel: { fontSize: typography.xs, fontWeight: '700', color: colors.muted, letterSpacing: 0.4 },
-  timeValue: { fontSize: typography.md, fontWeight: '700', color: colors.brand, marginTop: 2 },
+  timeLabel: { fontSize: typography.xs, fontFamily: 'Inter_700Bold', color: colors.muted, letterSpacing: 0.4 },
+  timeValue: { fontSize: typography.md, fontFamily: 'Inter_700Bold', color: colors.brand, marginTop: 2 },
   timeSep: { width: 1, height: 30, backgroundColor: colors.border },
   actionRow: { flexDirection: 'row', gap: spacing.sm, borderTopWidth: 1, borderTopColor: colors.divider, paddingTop: spacing.md },
   editBtn: { flex: 1, paddingVertical: 10, borderRadius: radius.md, alignItems: 'center', borderWidth: 1.5, borderColor: colors.border },
-  editBtnText: { color: colors.brand, fontWeight: '700', fontSize: typography.sm },
+  editBtnText: { color: colors.brand, fontFamily: 'Inter_700Bold', fontSize: typography.sm },
   delBtn: { flex: 1, paddingVertical: 10, borderRadius: radius.md, alignItems: 'center', backgroundColor: colors.dangerSoft, borderWidth: 1, borderColor: colors.danger },
-  delBtnText: { color: colors.danger, fontWeight: '700', fontSize: typography.sm },
+  delBtnText: { color: colors.danger, fontFamily: 'Inter_700Bold', fontSize: typography.sm },
 });

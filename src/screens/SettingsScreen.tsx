@@ -10,7 +10,7 @@ import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
 import UserProfileSummary from '../components/UserProfileSummary';
 import NotificationToggle from '../components/NotificationToggle';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 export default function SettingsScreen({
   route,
@@ -170,7 +170,7 @@ const s = StyleSheet.create({
     borderWidth: 1, borderColor: colors.warn + '44',
   },
   forceBannerIconWrap: { width: 36, height: 36, borderRadius: radius.lg, alignItems: 'center', justifyContent: 'center' },
-  forceBannerTitle: { fontSize: typography.md, fontWeight: '700', color: colors.warnDark, marginBottom: spacing.xs },
+  forceBannerTitle: { fontSize: typography.md, fontFamily: 'Inter_700Bold', color: colors.warnDark, marginBottom: spacing.xs },
   forceBannerBody: { fontSize: typography.sm, color: colors.ink2, lineHeight: 19 },
 
   card: {
@@ -178,7 +178,7 @@ const s = StyleSheet.create({
     padding: spacing.lg, borderWidth: 1, borderColor: colors.border,
     marginBottom: spacing.md,
   },
-  cardTitle: { fontSize: typography.lg, fontWeight: '700', color: colors.ink, marginBottom: spacing.md },
+  cardTitle: { fontSize: typography.lg, fontFamily: 'Inter_700Bold', color: colors.ink, marginBottom: spacing.md },
 
   messageBanner: {
     borderRadius: radius.md, padding: spacing.md,
@@ -189,7 +189,7 @@ const s = StyleSheet.create({
   messageText: { fontSize: typography.sm, lineHeight: 19 },
 
   label: {
-    fontSize: typography.sm, fontWeight: '600', color: colors.ink2,
+    fontSize: typography.sm, fontFamily: 'Inter_600SemiBold', color: colors.ink2,
     marginTop: spacing.md, marginBottom: spacing.xs,
   },
   input: {
@@ -202,7 +202,7 @@ const s = StyleSheet.create({
     paddingVertical: 14, alignItems: 'center', marginTop: spacing.lg,
   },
   saveBtnDisabled: { opacity: 0.7 },
-  saveBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
+  saveBtnText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.md },
 
   infoRow: {
     flexDirection: 'row', justifyContent: 'space-between',
@@ -210,12 +210,12 @@ const s = StyleSheet.create({
   },
   infoRowLast: { borderBottomWidth: 0 },
   infoLabel: { fontSize: typography.sm, color: colors.muted },
-  infoValue: { fontSize: typography.sm, color: colors.ink, fontWeight: '600', maxWidth: '60%', textAlign: 'right' },
+  infoValue: { fontSize: typography.sm, color: colors.ink, fontFamily: 'Inter_600SemiBold', maxWidth: '60%', textAlign: 'right' },
 
   logoutBtn: {
     borderWidth: 1.5, borderColor: colors.danger,
     borderRadius: radius.lg, paddingVertical: 14,
     alignItems: 'center', marginTop: spacing.sm,
   },
-  logoutText: { color: colors.danger, fontWeight: '700', fontSize: typography.md },
+  logoutText: { color: colors.danger, fontFamily: 'Inter_700Bold', fontSize: typography.md },
 });

@@ -6,7 +6,7 @@ import {
 import { Ionicons } from '@expo/vector-icons';
 import apiClient from '../api/client';
 
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 function initials(name: string) {
   return name.split(' ').filter(Boolean).slice(0, 2)
@@ -32,7 +32,7 @@ function StatusChip({ checkIn, isLate }: { checkIn: string | null; isLate?: bool
 }
 const chipS = StyleSheet.create({
   chip: { paddingHorizontal: spacing.sm, paddingVertical: 3, borderRadius: radius.pill },
-  text: { fontSize: typography.xs, fontWeight: '700' },
+  text: { fontSize: typography.xs, fontFamily: 'Inter_700Bold' },
 });
 
 export default function AttendanceListScreen({ route }: any) {
@@ -202,7 +202,7 @@ const styles = StyleSheet.create({
     borderBottomColor: colors.border,
   },
   headerCell: {
-    fontSize: typography.xs, fontWeight: '700',
+    fontSize: typography.xs, fontFamily: 'Inter_700Bold',
     color: colors.muted, letterSpacing: 0.5,
   },
 
@@ -213,7 +213,7 @@ const styles = StyleSheet.create({
     paddingTop: 80, gap: spacing.sm,
   },
   emptyIcon: { fontSize: 40 },
-  emptyTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink },
+  emptyTitle: { fontSize: typography.xl, fontFamily: 'Inter_700Bold', color: colors.ink },
   emptyBody: { fontSize: typography.base, color: colors.muted, textAlign: 'center', paddingHorizontal: spacing.xl },
 
   row: {
@@ -227,7 +227,7 @@ const styles = StyleSheet.create({
   rowAlt: { backgroundColor: colors.bgDeep },
 
   cell: { flexDirection: 'row', alignItems: 'center' },
-  cellPrimary: { fontSize: typography.sm, fontWeight: '600', color: colors.ink },
+  cellPrimary: { fontSize: typography.sm, fontFamily: 'Inter_600SemiBold', color: colors.ink },
   cellSecondary: { fontSize: typography.xs, color: colors.muted },
   cellText: { fontSize: typography.sm, color: colors.ink2 },
 
@@ -236,5 +236,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brandSoft,
     alignItems: 'center', justifyContent: 'center',
   },
-  miniAvatarText: { fontSize: 10, fontWeight: '700', color: colors.brand },
+  miniAvatarText: { fontSize: 10, fontFamily: 'Inter_700Bold', color: colors.brand },
 });

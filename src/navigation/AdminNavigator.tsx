@@ -3,7 +3,7 @@ import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { colors } from '../theme/colors';
+import { colors, fonts} from '../theme/colors';
 import TabIcon from '../components/TabIcon';
 
 import AdminDashboardScreen from '../screens/AdminDashboardScreen';
@@ -30,7 +30,7 @@ const RequestsStack = createNativeStackNavigator();
 
 const SHARED_HEADER = {
   headerStyle: { backgroundColor: colors.card },
-  headerTitleStyle: { color: colors.ink, fontWeight: '700' as const, fontSize: 17 },
+  headerTitleStyle: { color: colors.ink, fontFamily: 'Inter_700Bold' as const, fontSize: 17 },
   headerShadowVisible: false,
   headerTintColor: colors.brand,
 };
@@ -157,7 +157,7 @@ function AdminTabs() {
           tabBarInactiveTintColor: colors.tabBarInactive,
           tabBarLabelStyle: {
             fontSize: 9,
-            fontWeight: '600',
+            fontFamily: 'Inter_600SemiBold',
             // Zero out all extra margins so the label sits exactly where
             // React Navigation's internal layout places it, with no extra
             // push toward the edge of the bar.

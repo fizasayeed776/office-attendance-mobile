@@ -6,7 +6,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../api/client';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 const LEAVE_TYPES = ['Casual Leave', 'Sick Leave', 'Annual Leave', 'Emergency Leave'];
 
@@ -31,7 +31,7 @@ function StatusChip({ status }: { status: string }) {
 }
 const chip = StyleSheet.create({
   wrap: { paddingHorizontal: spacing.sm, paddingVertical: 4, borderRadius: radius.pill },
-  text: { fontSize: typography.xs, fontWeight: '700' },
+  text: { fontSize: typography.xs, fontFamily: 'Inter_700Bold' },
 });
 
 export default function LeavesScreen({ route }: any) {
@@ -228,9 +228,9 @@ const modal = StyleSheet.create({
     width: 36, height: 4, borderRadius: 2,
     backgroundColor: colors.borderStrong, alignSelf: 'center', marginBottom: spacing.lg,
   },
-  title: { fontSize: typography.xl, fontWeight: '700', color: colors.ink, marginBottom: spacing.lg },
+  title: { fontSize: typography.xl, fontFamily: 'Inter_700Bold', color: colors.ink, marginBottom: spacing.lg },
   label: {
-    fontSize: typography.sm, fontWeight: '600', color: colors.ink2,
+    fontSize: typography.sm, fontFamily: 'Inter_600SemiBold', color: colors.ink2,
     marginBottom: spacing.xs, marginTop: spacing.md, letterSpacing: 0.2,
   },
   typeGrid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.sm },
@@ -240,7 +240,7 @@ const modal = StyleSheet.create({
     backgroundColor: colors.bg,
   },
   typeChipActive: { backgroundColor: colors.brand, borderColor: colors.brand },
-  typeChipText: { fontSize: typography.sm, color: colors.ink2, fontWeight: '600' },
+  typeChipText: { fontSize: typography.sm, color: colors.ink2, fontFamily: 'Inter_600SemiBold' },
   typeChipTextActive: { color: '#fff' },
   input: {
     backgroundColor: colors.bg, borderWidth: 1.5, borderColor: colors.border,
@@ -259,13 +259,13 @@ const modal = StyleSheet.create({
     flex: 1, paddingVertical: 14, borderRadius: radius.md,
     alignItems: 'center', borderWidth: 1.5, borderColor: colors.border,
   },
-  cancelText: { color: colors.ink2, fontWeight: '700' },
+  cancelText: { color: colors.ink2, fontFamily: 'Inter_700Bold' },
   submitBtn: {
     flex: 1, paddingVertical: 14, borderRadius: radius.md,
     alignItems: 'center', backgroundColor: colors.brand,
   },
   submitBtnDisabled: { opacity: 0.7 },
-  submitText: { color: '#fff', fontWeight: '700' },
+  submitText: { color: '#fff', fontFamily: 'Inter_700Bold' },
 });
 
 const styles = StyleSheet.create({
@@ -273,7 +273,7 @@ const styles = StyleSheet.create({
   list: { padding: spacing.lg, paddingBottom: 100 },
 
   empty: { paddingTop: 80, alignItems: 'center', gap: spacing.sm },
-  emptyTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink },
+  emptyTitle: { fontSize: typography.xl, fontFamily: 'Inter_700Bold', color: colors.ink },
   emptyBody: { fontSize: typography.base, color: colors.muted, textAlign: 'center' },
 
   card: {
@@ -287,7 +287,7 @@ const styles = StyleSheet.create({
   },
   leaveTypeWrap: { flexDirection: 'row', alignItems: 'center', gap: spacing.sm },
   leaveTypeIconWrap: { width: 26, height: 26, borderRadius: radius.sm, backgroundColor: colors.brandSoft, alignItems: 'center', justifyContent: 'center' },
-  leaveType: { fontSize: typography.md, fontWeight: '700', color: colors.ink },
+  leaveType: { fontSize: typography.md, fontFamily: 'Inter_700Bold', color: colors.ink },
 
   dateRow: {
     flexDirection: 'row', alignItems: 'center', gap: spacing.md,
@@ -295,15 +295,15 @@ const styles = StyleSheet.create({
     padding: spacing.md, marginBottom: spacing.sm,
   },
   dateItem: { flex: 1, gap: 2 },
-  dateLabel: { fontSize: typography.xs, fontWeight: '700', color: colors.muted, letterSpacing: 0.4 },
-  dateValue: { fontSize: typography.sm, fontWeight: '700', color: colors.ink },
+  dateLabel: { fontSize: typography.xs, fontFamily: 'Inter_700Bold', color: colors.muted, letterSpacing: 0.4 },
+  dateValue: { fontSize: typography.sm, fontFamily: 'Inter_700Bold', color: colors.ink },
   dateArrow: { paddingHorizontal: spacing.xs },
   daysBadge: {
     backgroundColor: colors.brandSoft, borderRadius: radius.md,
     paddingHorizontal: spacing.sm, paddingVertical: spacing.xs, alignItems: 'center',
   },
-  daysNum: { fontSize: typography.xl, fontWeight: '800', color: colors.brand, lineHeight: 24 },
-  daysLabel: { fontSize: typography.xs, color: colors.brand, fontWeight: '600' },
+  daysNum: { fontSize: typography.xl, fontFamily: 'Inter_800ExtraBold', color: colors.brand, lineHeight: 24 },
+  daysLabel: { fontSize: typography.xs, color: colors.brand, fontFamily: 'Inter_600SemiBold' },
 
   reason: { fontSize: typography.sm, color: colors.muted, lineHeight: 18 },
   rejectionWrap: {
@@ -319,5 +319,5 @@ const styles = StyleSheet.create({
     backgroundColor: colors.brand, borderRadius: radius.lg,
     paddingVertical: 15, alignItems: 'center',
   },
-  fabText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
+  fabText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.md },
 });

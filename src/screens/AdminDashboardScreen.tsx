@@ -5,7 +5,7 @@ import {
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import api from '../api/client';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 import { Ionicons } from '@expo/vector-icons';
 
@@ -251,15 +251,15 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: spacing.sm,
   },
-  greeting: { fontSize: typography.base, color: colors.muted, fontWeight: '500' },
-  adminName: { fontSize: typography.xxl, fontWeight: '800', color: colors.ink, marginTop: 2 },
+  greeting: { fontSize: typography.base, color: colors.muted, fontFamily: 'Inter_500Medium' },
+  adminName: { fontSize: typography.xxl, fontFamily: 'Inter_800ExtraBold', color: colors.ink, marginTop: 2 },
   roleBadge: {
     backgroundColor: colors.brandSoft,
     borderRadius: radius.pill,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.xs,
   },
-  roleText: { fontSize: typography.xs, fontWeight: '700', color: colors.brand, letterSpacing: 0.5 },
+  roleText: { fontSize: typography.xs, fontFamily: 'Inter_700Bold', color: colors.brand, letterSpacing: 0.5 },
 
   // ── Date bar
   datebar: {
@@ -271,7 +271,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: colors.border,
   },
-  datebarText: { fontSize: typography.sm, color: colors.muted, fontWeight: '500' },
+  datebarText: { fontSize: typography.sm, color: colors.muted, fontFamily: 'Inter_500Medium' },
 
   // ── Error
   errorBanner: {
@@ -301,14 +301,14 @@ const styles = StyleSheet.create({
   },
   statLabel: {
     fontSize: typography.xs,
-    fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
     color: colors.muted,
     letterSpacing: 0.6,
     marginBottom: spacing.sm,
   },
   statValue: {
     fontSize: 38,
-    fontWeight: '800',
+    fontFamily: 'Inter_800ExtraBold',
     color: colors.ink,
     lineHeight: 44,
     marginBottom: spacing.sm,
@@ -319,7 +319,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: spacing.sm,
     paddingVertical: spacing.xxs,
   },
-  statBadgeText: { fontSize: typography.xs, fontWeight: '700' },
+  statBadgeText: { fontSize: typography.xs, fontFamily: 'Inter_700Bold' },
 
   // ── Quick actions
   actionsGrid: {
@@ -338,7 +338,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     gap: spacing.sm,
   },
-  actionLabel: { fontSize: typography.md, fontWeight: '700', color: colors.ink },
+  actionLabel: { fontSize: typography.md, fontFamily: 'Inter_700Bold', color: colors.ink },
 
   // ── Section
   section: {
@@ -360,7 +360,7 @@ const styles = StyleSheet.create({
   // sectionTitle used standalone (with bottom margin) — e.g. "Quick Actions"
   sectionTitle: {
     fontSize: typography.lg,
-    fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
     color: colors.ink,
     marginBottom: spacing.md,
   },
@@ -368,10 +368,10 @@ const styles = StyleSheet.create({
   // sectionHeader which already supplies its own vertical padding.
   sectionTitleInline: {
     fontSize: typography.lg,
-    fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
     color: colors.ink,
   },
-  viewAll: { fontSize: typography.sm, color: colors.brand, fontWeight: '600' },
+  viewAll: { fontSize: typography.sm, color: colors.brand, fontFamily: 'Inter_600SemiBold' },
 
   // ── Table
   tableHeader: {
@@ -384,7 +384,7 @@ const styles = StyleSheet.create({
   },
   tableHeaderCell: {
     fontSize: typography.xs,
-    fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
     color: colors.muted,
     letterSpacing: 0.5,
   },
@@ -398,7 +398,7 @@ const styles = StyleSheet.create({
   },
   tableRowAlt: { backgroundColor: colors.bgDeep },
   tableCell: { flexDirection: 'row', alignItems: 'center' },
-  tableCellPrimary: { fontSize: typography.sm, fontWeight: '600', color: colors.ink },
+  tableCellPrimary: { fontSize: typography.sm, fontFamily: 'Inter_600SemiBold', color: colors.ink },
   tableCellSecondary: { fontSize: typography.xs, color: colors.muted, marginTop: 1 },
   tableCellText: { fontSize: typography.sm, color: colors.ink2 },
 
@@ -410,14 +410,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  miniAvatarText: { fontSize: 10, fontWeight: '700', color: colors.brand },
+  miniAvatarText: { fontSize: 10, fontFamily: 'Inter_700Bold', color: colors.brand },
 
   statusChip: {
     borderRadius: radius.pill,
     paddingHorizontal: spacing.sm,
     paddingVertical: 3,
   },
-  statusChipText: { fontSize: typography.xs, fontWeight: '700' },
+  statusChipText: { fontSize: typography.xs, fontFamily: 'Inter_700Bold' },
 
   emptyRow: {
     padding: spacing.xl,

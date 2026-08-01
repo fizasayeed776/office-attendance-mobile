@@ -6,7 +6,7 @@ import {
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../api/client';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 // ─── helpers ────────────────────────────────────────────────────────────────
 
@@ -38,7 +38,7 @@ function Avatar({ name, size = 44 }: { name: string; size?: number }) {
 }
 const avatarStyles = StyleSheet.create({
   wrap: { alignItems: 'center', justifyContent: 'center' },
-  text: { color: '#fff', fontWeight: '700' },
+  text: { color: '#fff', fontFamily: 'Inter_700Bold' },
 });
 
 function StatusDot({ active }: { active: boolean }) {
@@ -59,8 +59,8 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 }
 const infoStyles = StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-between', paddingVertical: 6, borderBottomWidth: 1, borderBottomColor: colors.divider },
-  label: { fontSize: typography.sm, color: colors.muted, fontWeight: '500' },
-  value: { fontSize: typography.sm, color: colors.ink2, fontWeight: '600', maxWidth: '60%', textAlign: 'right' },
+  label: { fontSize: typography.sm, color: colors.muted, fontFamily: 'Inter_500Medium' },
+  value: { fontSize: typography.sm, color: colors.ink2, fontFamily: 'Inter_600SemiBold', maxWidth: '60%', textAlign: 'right' },
 });
 
 // ─── modal helpers ──────────────────────────────────────────────────────────
@@ -154,10 +154,10 @@ const modalStyles = StyleSheet.create({
     alignSelf: 'center',
     marginBottom: spacing.lg,
   },
-  title: { fontSize: typography.xl, fontWeight: '700', color: colors.ink, marginBottom: spacing.xs },
+  title: { fontSize: typography.xl, fontFamily: 'Inter_700Bold', color: colors.ink, marginBottom: spacing.xs },
   subtitle: { fontSize: typography.sm, color: colors.muted, marginBottom: spacing.lg },
   fieldWrap: { marginBottom: spacing.md },
-  fieldLabel: { fontSize: typography.sm, fontWeight: '600', color: colors.ink2, marginBottom: spacing.xs, letterSpacing: 0.2 },
+  fieldLabel: { fontSize: typography.sm, fontFamily: 'Inter_600SemiBold', color: colors.ink2, marginBottom: spacing.xs, letterSpacing: 0.2 },
   input: {
     backgroundColor: colors.bg,
     borderWidth: 1.5,
@@ -174,13 +174,13 @@ const modalStyles = StyleSheet.create({
     flex: 1, paddingVertical: 14, borderRadius: radius.md,
     alignItems: 'center', borderWidth: 1.5, borderColor: colors.border,
   },
-  cancelText: { color: colors.ink2, fontWeight: '700', fontSize: typography.md },
+  cancelText: { color: colors.ink2, fontFamily: 'Inter_700Bold', fontSize: typography.md },
   saveBtn: {
     flex: 1, paddingVertical: 14, borderRadius: radius.md,
     alignItems: 'center', backgroundColor: colors.brand,
   },
   saveBtnDisabled: { opacity: 0.7 },
-  saveText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
+  saveText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.md },
 });
 
 // ─── main screen ────────────────────────────────────────────────────────────
@@ -503,7 +503,7 @@ const styles = StyleSheet.create({
     alignItems: 'flex-start',
     marginBottom: spacing.lg,
   },
-  heading: { fontSize: typography.xxl, fontWeight: '800', color: colors.ink },
+  heading: { fontSize: typography.xxl, fontFamily: 'Inter_800ExtraBold', color: colors.ink },
   subheading: { fontSize: typography.sm, color: colors.muted, marginTop: 2 },
   addBtn: {
     backgroundColor: colors.brand,
@@ -511,7 +511,7 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.sm,
     paddingHorizontal: spacing.md,
   },
-  addBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.sm },
+  addBtnText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.sm },
 
   errorBanner: {
     backgroundColor: colors.dangerSoft,
@@ -526,7 +526,7 @@ const styles = StyleSheet.create({
   loadingWrap: { paddingVertical: 80, alignItems: 'center' },
 
   empty: { paddingVertical: 80, alignItems: 'center', gap: spacing.sm },
-  emptyTitle: { fontSize: typography.xl, fontWeight: '700', color: colors.ink },
+  emptyTitle: { fontSize: typography.xl, fontFamily: 'Inter_700Bold', color: colors.ink },
   emptyBody: { fontSize: typography.base, color: colors.muted, textAlign: 'center', paddingHorizontal: spacing.xl },
 
   // ── Employee card
@@ -548,9 +548,9 @@ const styles = StyleSheet.create({
   },
   cardHeaderMeta: { flex: 1 },
   cardNameRow: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs, marginBottom: spacing.xxs },
-  cardName: { fontSize: typography.lg, fontWeight: '700', color: colors.ink },
-  cardId: { fontSize: typography.sm, color: colors.muted, fontWeight: '600' },
-  cardDesig: { fontSize: typography.sm, color: colors.brand, fontWeight: '500', marginTop: 2 },
+  cardName: { fontSize: typography.lg, fontFamily: 'Inter_700Bold', color: colors.ink },
+  cardId: { fontSize: typography.sm, color: colors.muted, fontFamily: 'Inter_600SemiBold' },
+  cardDesig: { fontSize: typography.sm, color: colors.brand, fontFamily: 'Inter_500Medium', marginTop: 2 },
 
   cardBody: { paddingHorizontal: spacing.lg, paddingTop: spacing.sm, paddingBottom: spacing.sm },
 
@@ -564,7 +564,7 @@ const styles = StyleSheet.create({
   chip: { paddingHorizontal: spacing.sm, paddingVertical: spacing.xxs, borderRadius: radius.pill },
   chipSuccess: { backgroundColor: colors.successSoft },
   chipMuted: { backgroundColor: colors.bgDeep },
-  chipText: { fontSize: typography.xs, fontWeight: '600' },
+  chipText: { fontSize: typography.xs, fontFamily: 'Inter_600SemiBold' },
   chipTextSuccess: { color: colors.success },
   chipTextMuted: { color: colors.muted },
 
@@ -581,9 +581,9 @@ const styles = StyleSheet.create({
     borderRightWidth: 1,
     borderRightColor: colors.divider,
   },
-  actionBtnText: { fontSize: typography.sm, fontWeight: '700', color: colors.brand },
+  actionBtnText: { fontSize: typography.sm, fontFamily: 'Inter_700Bold', color: colors.brand },
   actionBtnDanger: { borderRightWidth: 0 },
-  actionBtnDangerText: { fontSize: typography.sm, fontWeight: '700', color: colors.danger },
+  actionBtnDangerText: { fontSize: typography.sm, fontFamily: 'Inter_700Bold', color: colors.danger },
 
   // ── Modal error
   modalError: {
@@ -616,5 +616,5 @@ const styles = StyleSheet.create({
   },
   pickerItemActive: { backgroundColor: colors.brandSofter },
   pickerItemText: { fontSize: typography.base, color: colors.ink2 },
-  pickerItemTextActive: { color: colors.brand, fontWeight: '700' },
+  pickerItemTextActive: { color: colors.brand, fontFamily: 'Inter_700Bold' },
 });

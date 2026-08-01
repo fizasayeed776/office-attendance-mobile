@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 function initials(name?: string) {
   if (!name) return '?';
@@ -58,8 +58,8 @@ function InfoRow({ label, value, last }: { label: string; value: string; last?: 
 const i = StyleSheet.create({
   row: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', paddingVertical: spacing.sm, borderBottomWidth: 1, borderBottomColor: colors.divider },
   rowLast: { borderBottomWidth: 0 },
-  label: { fontSize: typography.sm, color: colors.muted, fontWeight: '500' },
-  value: { fontSize: typography.sm, color: colors.ink, fontWeight: '600' },
+  label: { fontSize: typography.sm, color: colors.muted, fontFamily: 'Inter_500Medium' },
+  value: { fontSize: typography.sm, color: colors.ink, fontFamily: 'Inter_600SemiBold' },
 });
 
 const s = StyleSheet.create({
@@ -77,14 +77,14 @@ const s = StyleSheet.create({
     width: 60, height: 60, borderRadius: 30, backgroundColor: colors.brand,
     alignItems: 'center', justifyContent: 'center',
   },
-  avatarText: { color: '#fff', fontSize: typography.xxl, fontWeight: '700' },
+  avatarText: { color: '#fff', fontSize: typography.xxl, fontFamily: 'Inter_700Bold' },
   meta: { flex: 1, gap: spacing.xs },
-  name: { fontSize: typography.xl, fontWeight: '700', color: colors.ink },
+  name: { fontSize: typography.xl, fontFamily: 'Inter_700Bold', color: colors.ink },
   username: { fontSize: typography.sm, color: colors.muted },
   roleBadge: {
     alignSelf: 'flex-start', backgroundColor: colors.brandSoft,
     borderRadius: radius.pill, paddingHorizontal: spacing.sm, paddingVertical: 2,
   },
-  roleBadgeText: { fontSize: typography.xs, fontWeight: '700', color: colors.brand, letterSpacing: 0.4 },
+  roleBadgeText: { fontSize: typography.xs, fontFamily: 'Inter_700Bold', color: colors.brand, letterSpacing: 0.4 },
   infoSection: { paddingHorizontal: spacing.lg, paddingVertical: spacing.xs },
 });

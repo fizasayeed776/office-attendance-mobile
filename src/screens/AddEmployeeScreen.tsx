@@ -6,7 +6,7 @@ import {
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { Ionicons } from '@expo/vector-icons';
 import api from '../api/client';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 type Step = 'details' | 'capture';
 
@@ -27,7 +27,7 @@ function Field({ label, required, children }: {
 const fieldStyles = StyleSheet.create({
   wrap: { marginBottom: spacing.md },
   label: {
-    fontSize: typography.sm, fontWeight: '600',
+    fontSize: typography.sm, fontFamily: 'Inter_600SemiBold',
     color: colors.ink2, marginBottom: spacing.xs, letterSpacing: 0.2,
   },
   asterisk: { color: colors.danger },
@@ -323,9 +323,9 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
   },
   stepDotInactive: { backgroundColor: colors.bgDeep },
-  stepDotText: { fontSize: typography.sm, fontWeight: '700', color: '#fff' },
+  stepDotText: { fontSize: typography.sm, fontFamily: 'Inter_700Bold', color: '#fff' },
   stepDotTextInactive: { color: colors.muted },
-  stepLabel: { fontSize: typography.sm, fontWeight: '600', color: colors.brand },
+  stepLabel: { fontSize: typography.sm, fontFamily: 'Inter_600SemiBold', color: colors.brand },
   stepLabelInactive: { color: colors.muted },
   stepLine: { flex: 1, height: 1.5, backgroundColor: colors.border },
 
@@ -340,7 +340,7 @@ const styles = StyleSheet.create({
   },
   sectionTitle: {
     fontSize: typography.sm,
-    fontWeight: '700',
+    fontFamily: 'Inter_700Bold',
     color: colors.muted,
     letterSpacing: 0.6,
     textTransform: 'uppercase',
@@ -367,7 +367,7 @@ const styles = StyleSheet.create({
     marginTop: spacing.sm,
   },
   submitBtnDisabled: { opacity: 0.7 },
-  submitBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md, letterSpacing: 0.3 },
+  submitBtnText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.md, letterSpacing: 0.3 },
 
   // ══ Capture step
   captureScreen: { flex: 1, backgroundColor: colors.sidebar },
@@ -387,13 +387,13 @@ const styles = StyleSheet.create({
     flex: 1, alignItems: 'center', justifyContent: 'center',
     padding: spacing.xl, gap: spacing.md,
   },
-  permissionTitle: { color: '#fff', fontSize: typography.xl, fontWeight: '700', textAlign: 'center' },
+  permissionTitle: { color: '#fff', fontSize: typography.xl, fontFamily: 'Inter_700Bold', textAlign: 'center' },
   permissionBody: { color: colors.mutedLight, fontSize: typography.base, textAlign: 'center', lineHeight: 22 },
   permissionBtn: {
     backgroundColor: colors.brand, borderRadius: radius.md,
     paddingVertical: 12, paddingHorizontal: spacing.xl, marginTop: spacing.sm,
   },
-  permissionBtnText: { color: '#fff', fontWeight: '700' },
+  permissionBtnText: { color: '#fff', fontFamily: 'Inter_700Bold' },
 
   captureInfo: {
     backgroundColor: colors.sidebarBorder,
@@ -409,7 +409,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   captureInfoLabel: { fontSize: typography.sm, color: colors.mutedLight },
-  captureInfoValue: { fontSize: typography.sm, color: '#fff', fontWeight: '600' },
+  captureInfoValue: { fontSize: typography.sm, color: '#fff', fontFamily: 'Inter_600SemiBold' },
 
   sampleDot: { width: 10, height: 10, borderRadius: 5 },
   sampleDotFilled: { backgroundColor: colors.brand },
@@ -428,7 +428,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   captureBtnInner: { flexDirection: 'row', alignItems: 'center' },
-  captureBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
+  captureBtnText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.md },
 
   trainBtn: {
     backgroundColor: colors.success,
@@ -438,10 +438,10 @@ const styles = StyleSheet.create({
   },
   trainBtnInner: { flexDirection: 'row', alignItems: 'center' },
   trainBtnDisabled: { backgroundColor: colors.bgDeep },
-  trainBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
+  trainBtnText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.md },
   trainBtnTextDisabled: { color: colors.muted },
 
   backBtn: { alignItems: 'center', paddingVertical: spacing.sm },
   backBtnInner: { flexDirection: 'row', alignItems: 'center', gap: 2 },
-  backBtnText: { color: colors.mutedLight, fontWeight: '600', fontSize: typography.base },
+  backBtnText: { color: colors.mutedLight, fontFamily: 'Inter_600SemiBold', fontSize: typography.base },
 });

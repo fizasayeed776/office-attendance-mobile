@@ -8,7 +8,7 @@ import { useAuth } from '../context/AuthContext';
 import UserProfileSummary from '../components/UserProfileSummary';
 import NotificationToggle from '../components/NotificationToggle';
 import api from '../api/client';
-import { colors, spacing, radius, typography } from '../theme/colors';
+import { colors, spacing, radius, typography, fonts} from '../theme/colors';
 
 export default function EmployeeSettingsScreen() {
   const { logout } = useAuth();
@@ -111,7 +111,7 @@ const s = StyleSheet.create({
     padding: spacing.lg, borderWidth: 1, borderColor: colors.border,
     marginBottom: spacing.md,
   },
-  cardTitle: { fontSize: typography.lg, fontWeight: '700', color: colors.ink, marginBottom: spacing.md },
+  cardTitle: { fontSize: typography.lg, fontFamily: 'Inter_700Bold', color: colors.ink, marginBottom: spacing.md },
 
   messageBanner: {
     borderRadius: radius.md, padding: spacing.md,
@@ -122,7 +122,7 @@ const s = StyleSheet.create({
   messageText: { fontSize: typography.sm, lineHeight: 19 },
 
   label: {
-    fontSize: typography.sm, fontWeight: '600', color: colors.ink2,
+    fontSize: typography.sm, fontFamily: 'Inter_600SemiBold', color: colors.ink2,
     marginTop: spacing.md, marginBottom: spacing.xs,
   },
   input: {
@@ -135,12 +135,12 @@ const s = StyleSheet.create({
     paddingVertical: 14, alignItems: 'center', marginTop: spacing.lg,
   },
   saveBtnDisabled: { opacity: 0.7 },
-  saveBtnText: { color: '#fff', fontWeight: '700', fontSize: typography.md },
+  saveBtnText: { color: '#fff', fontFamily: 'Inter_700Bold', fontSize: typography.md },
 
   logoutBtn: {
     borderWidth: 1.5, borderColor: colors.danger,
     borderRadius: radius.lg, paddingVertical: 14,
     alignItems: 'center', marginTop: spacing.sm,
   },
-  logoutText: { color: colors.danger, fontWeight: '700', fontSize: typography.md },
+  logoutText: { color: colors.danger, fontFamily: 'Inter_700Bold', fontSize: typography.md },
 });

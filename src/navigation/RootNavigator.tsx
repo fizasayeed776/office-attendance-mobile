@@ -5,7 +5,7 @@ import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import { useAuth } from '../context/AuthContext';
-import { colors, radius } from '../theme/colors';
+import { colors, radius, fonts} from '../theme/colors';
 
 import LoginScreen from '../screens/LoginScreen';
 import DashboardScreen from '../screens/DashboardScreen';
@@ -46,7 +46,7 @@ function MainTabs() {
           headerStyle: { backgroundColor: colors.card },
           headerTitleStyle: {
             color: colors.ink,
-            fontWeight: '700',
+            fontFamily: 'Inter_700Bold',
             fontSize: 17,
           },
           headerShadowVisible: false,
@@ -61,7 +61,7 @@ function MainTabs() {
           tabBarInactiveTintColor: colors.tabBarInactive,
           tabBarLabelStyle: {
             fontSize: 10,
-            fontWeight: '600',
+            fontFamily: 'Inter_600SemiBold',
             // Android adds its own bottom offset; zero it so label isn't
             // pushed out of the visible bar area on short screens.
             marginBottom: Platform.OS === 'android' ? 2 : 0,
@@ -135,7 +135,7 @@ export default function RootNavigator() {
                 headerShown: true,
                 title: 'Set up account',
                 headerStyle: { backgroundColor: colors.card },
-                headerTitleStyle: { color: colors.ink, fontWeight: '700' },
+                headerTitleStyle: { color: colors.ink, fontFamily: 'Inter_700Bold' },
                 headerTintColor: colors.brand,
               }}
             />
@@ -149,7 +149,7 @@ export default function RootNavigator() {
                 headerShown: true,
                 title: 'Change Password',
                 headerStyle: { backgroundColor: colors.card },
-                headerTitleStyle: { color: colors.ink, fontWeight: '700' },
+                headerTitleStyle: { color: colors.ink, fontFamily: 'Inter_700Bold' },
                 headerTintColor: colors.brand,
               }}
               initialParams={{ forceOnly: true }}
@@ -168,7 +168,7 @@ export default function RootNavigator() {
                 title: 'Mark Attendance',
                 presentation: 'modal',
                 headerStyle: { backgroundColor: colors.card },
-                headerTitleStyle: { color: colors.ink, fontWeight: '700' },
+                headerTitleStyle: { color: colors.ink, fontFamily: 'Inter_700Bold' },
                 headerTintColor: colors.brand,
               }}
             />
