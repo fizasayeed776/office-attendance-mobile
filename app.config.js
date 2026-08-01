@@ -45,6 +45,7 @@ module.exports = {
       ],
     },
     plugins: [
+      'expo-font',
       [
         'expo-camera',
         {

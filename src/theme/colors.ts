@@ -106,6 +106,21 @@ export const typography = {
   hero: 34,
 };
 
+// Inter font family tokens — use these alongside fontSize in StyleSheet.
+// The string values match the font names loaded by useFonts in App.tsx.
+// Usage:  fontFamily: fonts.regular   (replaces fontWeight: '400')
+//         fontFamily: fonts.medium    (replaces fontWeight: '500')
+//         fontFamily: fonts.semibold  (replaces fontWeight: '600')
+//         fontFamily: fonts.bold      (replaces fontWeight: '700')
+//         fontFamily: fonts.extrabold (replaces fontWeight: '800')
+export const fonts = {
+  regular:   'Inter_400Regular',
+  medium:    'Inter_500Medium',
+  semibold:  'Inter_600SemiBold',
+  bold:      'Inter_700Bold',
+  extrabold: 'Inter_800ExtraBold',
+} as const;
+
 // Reusable shadow presets (apply as style spread)
 export const shadows = {
   sm: {
